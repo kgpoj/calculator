@@ -88,4 +88,50 @@ describe('calculator reducer', () => {
             expect(actual.displayValue).toEqual('0.0010')
         });
     })
+
+    describe('perform plus', () => {
+        it('should perform plus with integers', () => {
+            let actual = calculatorSlice.reducer(initialState, plus())
+            actual = calculatorSlice.reducer(actual, inputNumber('1'))
+            expect(actual.displayValue).toEqual('1')
+            actual = calculatorSlice.reducer(actual, calculate())
+            expect(actual.displayValue).toEqual('1')
+            actual = calculatorSlice.reducer(actual, plus())
+            actual = calculatorSlice.reducer(actual, inputNumber('1'))
+            expect(actual.displayValue).toEqual('1')
+            actual = calculatorSlice.reducer(actual, calculate())
+            expect(actual.displayValue).toEqual('2')
+
+            initialState.displayValue = '999'
+            actual = calculatorSlice.reducer(initialState, plus())
+            actual = calculatorSlice.reducer(actual, inputNumber('1'))
+            expect(actual.displayValue).toEqual('1')
+            actual = calculatorSlice.reducer(actual, calculate())
+            expect(actual.displayValue).toEqual('1,000')
+
+            initialState.displayValue = '999,999,999'
+            actual = calculatorSlice.reducer(initialState, plus())
+            actual = calculatorSlice.reducer(actual, inputNumber('1'))
+            expect(actual.displayValue).toEqual('1')
+            actual = calculatorSlice.reducer(actual, calculate())
+            expect(actual.displayValue).toEqual('1e9')
+        });
+
+        it('should perform plus with float numbers', () => {
+            let actual = calculatorSlice.reducer(initialState, plus())
+            actual = calculatorSlice.reducer(actual, inputNumber('.'))
+            actual = calculatorSlice.reducer(actual, inputNumber('1'))
+            expect(actual.displayValue).toEqual('0.1')
+            actual = calculatorSlice.reducer(actual, calculate())
+            expect(actual.displayValue).toEqual('0.1')
+
+            actual = calculatorSlice.reducer(actual, plus())
+            actual = calculatorSlice.reducer(actual, inputNumber('0'))
+            actual = calculatorSlice.reducer(actual, inputNumber('.'))
+            actual = calculatorSlice.reducer(actual, inputNumber('9'))
+            expect(actual.displayValue).toEqual('0.9')
+            actual = calculatorSlice.reducer(actual, calculate())
+            expect(actual.displayValue).toEqual('1')
+        });
+    })
 })
