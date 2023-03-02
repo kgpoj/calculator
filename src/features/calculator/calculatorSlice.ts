@@ -20,7 +20,8 @@ const calculatorSlice = createSlice({
             } else if (currentDisplayValue === '0') {
                 state.displayValue = value;
             } else if (getNumberOfDigits(currentDisplayValue) < 9) {
-                state.displayValue = parseDisplayValue(currentDisplayValue + value)
+                const newValueWithoutComma = (currentDisplayValue + value).replaceAll(',', '')
+                state.displayValue = formatDisplayValue(newValueWithoutComma)
             }
         }
     },
@@ -38,17 +39,15 @@ const getNumberOfDigits = (str: string): number => {
     return numberCount;
 };
 
-const parseDisplayValue = (newValue: string): string => {
-    const newValueWithoutComma = newValue.replaceAll(',', '')
-    return separateWithComma(newValueWithoutComma)
-};
-
-const separateWithComma = (numberString: string): string => {
+const formatDisplayValue = (numberString: string): string => {
     const isFloatAndEndsWithZero = /\.\d*0$/.test(numberString);
     if (isFloatAndEndsWithZero) {
         const integerPart = numberString.split('.')[0]
         const decimalPart = numberString.split('.')[1];
-        return `${separateWithComma(integerPart)}.${decimalPart}`
+        return `${formatDisplayValue(integerPart)}.${decimalPart}`
+    }
+    if (Number(numberString) >= 1e9) {
+        return Number(numberString).toExponential().replace('+', '')
     }
     return Number(numberString).toLocaleString('en', {maximumFractionDigits: 8})
 };
