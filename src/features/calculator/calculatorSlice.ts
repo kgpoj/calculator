@@ -101,14 +101,16 @@ const removeComma = (numberString: string): string => {
 const toFormatString = (number: number | string): string => {
     const numberString = String(number)
     const isFloatAndEndsWithZero = /\.\d*0$/.test(numberString);
+    const [integerPart, decimalPart] = numberString.split('.')
     if (isFloatAndEndsWithZero) {
-        const [integerPart, decimalPart] = numberString.split('.')
         return `${toFormatString(integerPart)}.${decimalPart}`
     }
     if (Number(numberString) >= 1e9) {
-        return Number(numberString).toExponential().replace('+', '')
+        return Number(numberString).toLocaleString('en', {
+            notation: 'scientific'
+        }).toLowerCase()
     }
-    return Number(numberString).toLocaleString('en', {maximumFractionDigits: 8})
+    return Number(numberString).toLocaleString('en', {maximumFractionDigits: 9 - integerPart.length})
 };
 
 export const {inputNumber, plus, calculate} = calculatorSlice.actions

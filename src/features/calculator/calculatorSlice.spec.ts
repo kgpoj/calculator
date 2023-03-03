@@ -181,5 +181,30 @@ describe('calculator reducer', () => {
             actual = calculatorSlice.reducer(actual, calculate())
             expect(actual.displayValue).toEqual('8')
         });
+
+        it('should not display more than 9 digits', () => {
+            customInitialState('1,111.00001')
+            let actual = calculatorSlice.reducer(initialState, plus())
+            actual = calculatorSlice.reducer(actual, inputNumber('0'))
+            actual = calculatorSlice.reducer(actual, inputNumber('.'))
+            actual = calculatorSlice.reducer(actual, inputNumber('0'))
+            actual = calculatorSlice.reducer(actual, inputNumber('0'))
+            actual = calculatorSlice.reducer(actual, inputNumber('0'))
+            actual = calculatorSlice.reducer(actual, inputNumber('0'))
+            actual = calculatorSlice.reducer(actual, inputNumber('0'))
+            actual = calculatorSlice.reducer(actual, inputNumber('0'))
+            actual = calculatorSlice.reducer(actual, inputNumber('0'))
+            actual = calculatorSlice.reducer(actual, inputNumber('1'))
+            actual = calculatorSlice.reducer(actual, calculate())
+            expect(actual.displayValue).toEqual('1,111.00001')
+
+            customInitialState('999,999,999')
+            actual = calculatorSlice.reducer(initialState, plus())
+            actual = calculatorSlice.reducer(actual, inputNumber('1'))
+            actual = calculatorSlice.reducer(actual, calculate())
+            expect(actual.displayValue).toEqual('1e9')
+            actual = calculatorSlice.reducer(actual, calculate())
+            expect(actual.displayValue).toEqual('1e9')
+        });
     })
 })
