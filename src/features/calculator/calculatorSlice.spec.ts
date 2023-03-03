@@ -25,29 +25,6 @@ describe('calculator reducer', () => {
             expect(actual.displayValue).toEqual('12')
         });
 
-        it('should separate every three digits by a comma', () => {
-            customInitialState('123')
-            let actual = calculatorSlice.reducer(initialState, inputNumber('4'))
-            expect(actual.displayValue).toEqual('1,234')
-
-            actual = calculatorSlice.reducer(actual, inputNumber('5'))
-            expect(actual.displayValue).toEqual('12,345')
-            actual = calculatorSlice.reducer(actual, inputNumber('6'))
-            expect(actual.displayValue).toEqual('123,456')
-            actual = calculatorSlice.reducer(actual, inputNumber('7'))
-            expect(actual.displayValue).toEqual('1,234,567')
-            actual = calculatorSlice.reducer(actual, inputNumber('8'))
-            expect(actual.displayValue).toEqual('12,345,678')
-            actual = calculatorSlice.reducer(actual, inputNumber('9'))
-            expect(actual.displayValue).toEqual('123,456,789')
-        });
-
-        it('should limit the maximum number of digits to 9', () => {
-            customInitialState('123,456,789')
-            let actual = calculatorSlice.reducer(initialState, inputNumber('0'))
-            expect(actual.displayValue).toEqual('123,456,789')
-        });
-
         it('should handle input dot', () => {
             let actual = calculatorSlice.reducer(initialState, inputNumber('.'))
             expect(actual.displayValue).toEqual('0.')
@@ -108,20 +85,6 @@ describe('calculator reducer', () => {
             expect(actual.displayValue).toEqual('1')
             actual = calculatorSlice.reducer(actual, calculate())
             expect(actual.displayValue).toEqual('2')
-
-            customInitialState('999')
-            actual = calculatorSlice.reducer(initialState, plus())
-            actual = calculatorSlice.reducer(actual, inputNumber('1'))
-            expect(actual.displayValue).toEqual('1')
-            actual = calculatorSlice.reducer(actual, calculate())
-            expect(actual.displayValue).toEqual('1,000')
-
-            customInitialState('999,999,999')
-            actual = calculatorSlice.reducer(initialState, plus())
-            actual = calculatorSlice.reducer(actual, inputNumber('1'))
-            expect(actual.displayValue).toEqual('1')
-            actual = calculatorSlice.reducer(actual, calculate())
-            expect(actual.displayValue).toEqual('1e9')
         });
 
         it('should perform plus with float numbers', () => {
@@ -180,31 +143,6 @@ describe('calculator reducer', () => {
             expect(actual.displayValue).toEqual('6')
             actual = calculatorSlice.reducer(actual, calculate())
             expect(actual.displayValue).toEqual('8')
-        });
-
-        it('should not display more than 9 digits', () => {
-            customInitialState('1,111.00001')
-            let actual = calculatorSlice.reducer(initialState, plus())
-            actual = calculatorSlice.reducer(actual, inputNumber('0'))
-            actual = calculatorSlice.reducer(actual, inputNumber('.'))
-            actual = calculatorSlice.reducer(actual, inputNumber('0'))
-            actual = calculatorSlice.reducer(actual, inputNumber('0'))
-            actual = calculatorSlice.reducer(actual, inputNumber('0'))
-            actual = calculatorSlice.reducer(actual, inputNumber('0'))
-            actual = calculatorSlice.reducer(actual, inputNumber('0'))
-            actual = calculatorSlice.reducer(actual, inputNumber('0'))
-            actual = calculatorSlice.reducer(actual, inputNumber('0'))
-            actual = calculatorSlice.reducer(actual, inputNumber('1'))
-            actual = calculatorSlice.reducer(actual, calculate())
-            expect(actual.displayValue).toEqual('1,111.00001')
-
-            customInitialState('999,999,999')
-            actual = calculatorSlice.reducer(initialState, plus())
-            actual = calculatorSlice.reducer(actual, inputNumber('1'))
-            actual = calculatorSlice.reducer(actual, calculate())
-            expect(actual.displayValue).toEqual('1e9')
-            actual = calculatorSlice.reducer(actual, calculate())
-            expect(actual.displayValue).toEqual('1e9')
         });
     })
 })

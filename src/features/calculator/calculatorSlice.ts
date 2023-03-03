@@ -60,7 +60,7 @@ const calculatorSlice = createSlice({
 
 const getDisplayValue = (state: CalculatorState, inputValue?: string): string => {
     if (inputValue) {
-        return toFormatString(removeComma(state.displayValue + inputValue))
+        return state.displayValue + inputValue
     }
     switch (state.operator) {
         case '':
@@ -71,7 +71,7 @@ const getDisplayValue = (state: CalculatorState, inputValue?: string): string =>
             const lastOperatedValue = state.lastOperation.slice(1)
             return getDisplayValue({...state, savedValue: lastOperatedValue, operator: lastOperator})
         case '+':
-            return toFormatString(Number(removeComma(state.savedValue)) + Number(removeComma(state.displayValue)))
+            return String(Number(state.savedValue) + Number(state.displayValue))
         default:
             return 'ERROR'
     }
@@ -92,25 +92,6 @@ const getNumberOfDigits = (str: string): number => {
         }
     }
     return numberCount;
-};
-
-const removeComma = (numberString: string): string => {
-    return numberString.replaceAll(',', '')
-}
-
-const toFormatString = (number: number | string): string => {
-    const numberString = String(number)
-    const isFloatAndEndsWithZero = /\.\d*0$/.test(numberString);
-    const [integerPart, decimalPart] = numberString.split('.')
-    if (isFloatAndEndsWithZero) {
-        return `${toFormatString(integerPart)}.${decimalPart}`
-    }
-    if (Number(numberString) >= 1e9) {
-        return Number(numberString).toLocaleString('en', {
-            notation: 'scientific'
-        }).toLowerCase()
-    }
-    return Number(numberString).toLocaleString('en', {maximumFractionDigits: 9 - integerPart.length})
 };
 
 export const {inputNumber, plus, calculate} = calculatorSlice.actions

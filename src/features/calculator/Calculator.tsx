@@ -2,6 +2,7 @@ import React from 'react';
 import styled from "styled-components";
 import {inputNumber, plus, calculate} from "./calculatorSlice";
 import {useAppDispatch, useAppSelector} from "../../app/hooks";
+import {toFormatString} from "../../util";
 
 enum buttonTheme {
     NUMBER,
@@ -92,7 +93,7 @@ const Calculator = () => {
 
     return (
         <StyledWrapper>
-            <DisplayArea type="text" value={displayValue} readOnly/>
+            <DisplayArea type="text" value={toFormatString(displayValue)} readOnly/>
             <OperationWrapper>
                 <Button theme={buttonTheme.FUNCTION}>C</Button>
                 <Button theme={buttonTheme.FUNCTION}>+/-</Button>
