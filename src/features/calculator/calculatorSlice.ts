@@ -5,6 +5,7 @@ export interface CalculatorState {
     operator: string,
     savedValue: string,
     lastOperation: string,
+    lastKey: string,
     firstNumber: boolean
 }
 
@@ -13,6 +14,7 @@ const initialState: CalculatorState = {
     operator: '',
     savedValue: '0',
     lastOperation: '',
+    lastKey: '',
     firstNumber: true
 }
 
@@ -31,12 +33,17 @@ const calculatorSlice = createSlice({
                 state.displayValue = getDisplayValue(state, inputValue)
             }
             state.firstNumber = false
+            state.lastKey = inputValue
         },
         plus: state => {
+            if (['+', '-', '×', '÷'].includes(state.lastKey)) {
+                return
+            }
             state.operator = '+'
             state.displayValue = getDisplayValue(state)
             state.savedValue = state.displayValue
             state.firstNumber = true
+            state.lastKey = '+'
         },
         calculate: state => {
             if (state.operator) {
@@ -46,6 +53,7 @@ const calculatorSlice = createSlice({
             state.savedValue = '0'
             state.operator = ''
             state.firstNumber = true
+            state.lastKey = '='
         }
     },
 });

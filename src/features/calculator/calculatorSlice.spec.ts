@@ -12,6 +12,7 @@ describe('calculator reducer', () => {
             operator: '',
             savedValue: '0',
             lastOperation: '',
+            lastKey: '',
             firstNumber: true
         }
     })
@@ -140,7 +141,7 @@ describe('calculator reducer', () => {
             expect(actual.displayValue).toEqual('1')
         });
 
-        it('should perform continuous when click `+`', () => {
+        it('should perform continuous when click `+` and input number', () => {
             let actual = calculatorSlice.reducer(initialState, plus())
             actual = calculatorSlice.reducer(actual, inputNumber('1'))
             expect(actual.displayValue).toEqual('1')
@@ -155,6 +156,14 @@ describe('calculator reducer', () => {
             actual = calculatorSlice.reducer(actual, inputNumber('4'))
             actual = calculatorSlice.reducer(actual, calculate())
             expect(actual.displayValue).toEqual('10')
+
+            actual = calculatorSlice.reducer(actual, plus())
+            expect(actual.displayValue).toEqual('10')
+            actual = calculatorSlice.reducer(actual, plus())
+            expect(actual.displayValue).toEqual('10')
+            actual = calculatorSlice.reducer(actual, plus())
+            expect(actual.displayValue).toEqual('10')
+
         });
 
         it('should perform continuous when click `=`', () => {
