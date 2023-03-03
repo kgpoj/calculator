@@ -4,6 +4,7 @@ export interface CalculatorState {
     displayValue: string,
     operator: string,
     savedValue: string,
+    lastOperation: string,
     firstNumber: boolean
 }
 
@@ -11,6 +12,7 @@ const initialState: CalculatorState = {
     displayValue: '0',
     operator: '',
     savedValue: '0',
+    lastOperation: '',
     firstNumber: true
 }
 
@@ -37,6 +39,9 @@ const calculatorSlice = createSlice({
             state.firstNumber = true
         },
         calculate: state => {
+            if (state.operator) {
+                state.lastOperation = state.operator + state.displayValue
+            }
             state.displayValue = getDisplayValue(state)
             state.savedValue = '0'
             state.operator = ''
@@ -50,6 +55,13 @@ const getDisplayValue = (state: CalculatorState, inputValue?: string): string =>
         return toFormatString(removeComma(state.displayValue + inputValue))
     }
     switch (state.operator) {
+        case '':
+            if (!state.lastOperation) {
+                return state.displayValue
+            }
+            const lastOperator = state.lastOperation[0]
+            const lastOperatedValue = state.lastOperation.slice(1)
+            return getDisplayValue({...state, savedValue: lastOperatedValue, operator: lastOperator})
         case '+':
             return toFormatString(Number(removeComma(state.savedValue)) + Number(removeComma(state.displayValue)))
         default:

@@ -11,6 +11,7 @@ describe('calculator reducer', () => {
             displayValue: '0',
             operator: '',
             savedValue: '0',
+            lastOperation: '',
             firstNumber: true
         }
     })
@@ -154,6 +155,22 @@ describe('calculator reducer', () => {
             actual = calculatorSlice.reducer(actual, inputNumber('4'))
             actual = calculatorSlice.reducer(actual, calculate())
             expect(actual.displayValue).toEqual('10')
+        });
+
+        it('should perform continuous when click `=`', () => {
+            let actual = calculatorSlice.reducer(initialState, calculate())
+            expect(actual.displayValue).toEqual('0')
+            actual = calculatorSlice.reducer(actual, plus())
+            actual = calculatorSlice.reducer(actual, inputNumber('2'))
+            expect(actual.displayValue).toEqual('2')
+            actual = calculatorSlice.reducer(actual, calculate())
+            expect(actual.displayValue).toEqual('2')
+            actual = calculatorSlice.reducer(actual, calculate())
+            expect(actual.displayValue).toEqual('4')
+            actual = calculatorSlice.reducer(actual, calculate())
+            expect(actual.displayValue).toEqual('6')
+            actual = calculatorSlice.reducer(actual, calculate())
+            expect(actual.displayValue).toEqual('8')
         });
     })
 })
