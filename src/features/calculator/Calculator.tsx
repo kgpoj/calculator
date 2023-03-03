@@ -26,7 +26,7 @@ const DisplayArea = styled.input`
   font-size: 80px;
   text-align: end;
   flex: 1;
-  
+
   &:focus-visible {
     outline: none;
   }
@@ -48,9 +48,14 @@ const OperationWrapper = styled.div`
   }
 `
 
-const Button = styled.button.attrs(props => ({
-    theme: props.theme || buttonTheme.NUMBER
-}))`
+interface CalculatorButtonProps {
+    $active?: boolean
+}
+
+const Button = styled.button.attrs<CalculatorButtonProps>(props => ({
+    theme: props.theme || buttonTheme.NUMBER,
+    $active: props.$active || false
+}))<CalculatorButtonProps>`
   color: ${({theme}) => theme === buttonTheme.FUNCTION ? 'black' : 'white'};
   background-color: ${({theme}) => {
     switch (theme) {
@@ -70,9 +75,19 @@ const Button = styled.button.attrs(props => ({
   border: none;
   padding: 0;
   font-size: 50px;
+  transition: all .2s cubic-bezier(.645, .045, .355, 1);
+  ${props => {
+    if (props.$active) {
+      return {
+        backgroundColor: 'white',
+        color: '#f1a33c'
+      }
+    }
+  }}
 `
 const Calculator = () => {
     const displayValue = useAppSelector(state => state.displayValue);
+    const lastKey = useAppSelector(state => state.lastKey);
     const dispatch = useAppDispatch();
 
     return (
@@ -94,7 +109,13 @@ const Calculator = () => {
                 <Button theme={buttonTheme.NUMBER} onClick={() => dispatch(inputNumber('1'))}>1</Button>
                 <Button theme={buttonTheme.NUMBER} onClick={() => dispatch(inputNumber('2'))}>2</Button>
                 <Button theme={buttonTheme.NUMBER} onClick={() => dispatch(inputNumber('3'))}>3</Button>
-                <Button theme={buttonTheme.OPERATOR} onClick={() => dispatch(plus())}>+</Button>
+                <Button
+                    theme={buttonTheme.OPERATOR}
+                    onClick={() => dispatch(plus())}
+                    $active={lastKey === '+'}
+                >
+                    +
+                </Button>
                 <Button theme={buttonTheme.NUMBER} onClick={() => dispatch(inputNumber('0'))}>0</Button>
                 <Button theme={buttonTheme.NUMBER} onClick={() => dispatch(inputNumber('.'))}>.</Button>
                 <Button theme={buttonTheme.OPERATOR} onClick={() => dispatch(calculate())}>=</Button>
