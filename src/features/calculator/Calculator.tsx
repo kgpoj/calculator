@@ -1,6 +1,6 @@
 import React from 'react';
 import styled from "styled-components";
-import {inputNumber} from "./calculatorSlice";
+import {inputNumber, plus, calculate} from "./calculatorSlice";
 import {useAppDispatch, useAppSelector} from "../../app/hooks";
 
 enum buttonTheme {
@@ -94,10 +94,10 @@ const Calculator = () => {
                 <Button theme={buttonTheme.NUMBER} onClick={() => dispatch(inputNumber('1'))}>1</Button>
                 <Button theme={buttonTheme.NUMBER} onClick={() => dispatch(inputNumber('2'))}>2</Button>
                 <Button theme={buttonTheme.NUMBER} onClick={() => dispatch(inputNumber('3'))}>3</Button>
-                <Button theme={buttonTheme.OPERATOR}>+</Button>
+                <Button theme={buttonTheme.OPERATOR} onClick={() => dispatch(plus())}>+</Button>
                 <Button theme={buttonTheme.NUMBER} onClick={() => dispatch(inputNumber('0'))}>0</Button>
                 <Button theme={buttonTheme.NUMBER} onClick={() => dispatch(inputNumber('.'))}>.</Button>
-                <Button theme={buttonTheme.OPERATOR}>=</Button>
+                <Button theme={buttonTheme.OPERATOR} onClick={() => dispatch(calculate())}>=</Button>
             </OperationWrapper>
         </StyledWrapper>
     )

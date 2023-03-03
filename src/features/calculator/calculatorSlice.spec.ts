@@ -2,11 +2,16 @@ import calculatorSlice, {CalculatorState, inputNumber, plus, calculate} from "./
 
 describe('calculator reducer', () => {
     let initialState: CalculatorState
+    const customInitialState = (displayValue: string): void => {
+        initialState.displayValue = displayValue
+        initialState.firstNumber = false
+    }
     beforeEach(() => {
         initialState = {
             displayValue: '0',
             operator: '',
-            savedValue: '0'
+            savedValue: '0',
+            firstNumber: true
         }
     })
     describe('input and display', () => {
@@ -19,7 +24,7 @@ describe('calculator reducer', () => {
         });
 
         it('should separate every three digits by a comma', () => {
-            initialState.displayValue = '123'
+            customInitialState('123')
             let actual = calculatorSlice.reducer(initialState, inputNumber('4'))
             expect(actual.displayValue).toEqual('1,234')
 
@@ -36,7 +41,7 @@ describe('calculator reducer', () => {
         });
 
         it('should limit the maximum number of digits to 9', () => {
-            initialState.displayValue = '123,456,789'
+            customInitialState('123,456,789')
             let actual = calculatorSlice.reducer(initialState, inputNumber('0'))
             expect(actual.displayValue).toEqual('123,456,789')
         });
@@ -69,7 +74,7 @@ describe('calculator reducer', () => {
             actual = calculatorSlice.reducer(actual, inputNumber('9'))
             expect(actual.displayValue).toEqual('0.12345678')
 
-            initialState.displayValue = '12,345,678'
+            customInitialState('12,345,678')
             actual = calculatorSlice.reducer(initialState, inputNumber('.'))
             expect(actual.displayValue).toEqual('12,345,678.')
             actual = calculatorSlice.reducer(actual, inputNumber('9'))
@@ -77,7 +82,7 @@ describe('calculator reducer', () => {
             actual = calculatorSlice.reducer(actual, inputNumber('9'))
             expect(actual.displayValue).toEqual('12,345,678.9')
 
-            initialState.displayValue = '0.'
+            customInitialState('0.')
             actual = calculatorSlice.reducer(initialState, inputNumber('0'))
             expect(actual.displayValue).toEqual('0.0')
             actual = calculatorSlice.reducer(actual, inputNumber('0'))
@@ -102,14 +107,14 @@ describe('calculator reducer', () => {
             actual = calculatorSlice.reducer(actual, calculate())
             expect(actual.displayValue).toEqual('2')
 
-            initialState.displayValue = '999'
+            customInitialState('999')
             actual = calculatorSlice.reducer(initialState, plus())
             actual = calculatorSlice.reducer(actual, inputNumber('1'))
             expect(actual.displayValue).toEqual('1')
             actual = calculatorSlice.reducer(actual, calculate())
             expect(actual.displayValue).toEqual('1,000')
 
-            initialState.displayValue = '999,999,999'
+            customInitialState('999,999,999')
             actual = calculatorSlice.reducer(initialState, plus())
             actual = calculatorSlice.reducer(actual, inputNumber('1'))
             expect(actual.displayValue).toEqual('1')
