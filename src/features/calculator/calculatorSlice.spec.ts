@@ -4,7 +4,7 @@ describe('calculator reducer', () => {
     let initialState: CalculatorState
     const customInitialState = (displayValue: string): void => {
         initialState.displayValue = displayValue
-        initialState.firstNumber = false
+        initialState.isFirstNumber = false
     }
     beforeEach(() => {
         initialState = {
@@ -13,7 +13,7 @@ describe('calculator reducer', () => {
             savedValue: '0',
             lastOperation: '',
             lastKey: '',
-            firstNumber: true
+            isFirstNumber: true
         }
     })
     describe('input and display', () => {

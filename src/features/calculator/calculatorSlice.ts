@@ -6,7 +6,7 @@ export interface CalculatorState {
     savedValue: string,
     lastOperation: string,
     lastKey: string,
-    firstNumber: boolean
+    isFirstNumber: boolean
 }
 
 const initialState: CalculatorState = {
@@ -15,7 +15,7 @@ const initialState: CalculatorState = {
     savedValue: '0',
     lastOperation: '',
     lastKey: '',
-    firstNumber: true
+    isFirstNumber: true
 }
 
 const calculatorSlice = createSlice({
@@ -27,12 +27,12 @@ const calculatorSlice = createSlice({
             const currentDisplayValue = state.displayValue;
             if (inputValue === '.') {
                 state.displayValue = handleInputDot(state)
-            } else if (state.firstNumber) {
+            } else if (state.isFirstNumber) {
                 state.displayValue = inputValue;
             } else if (getNumberOfDigits(currentDisplayValue) < 9) {
                 state.displayValue = getDisplayValue(state, inputValue)
             }
-            state.firstNumber = false
+            state.isFirstNumber = false
             state.lastKey = inputValue
         },
         plus: state => {
@@ -42,7 +42,7 @@ const calculatorSlice = createSlice({
             state.operator = '+'
             state.displayValue = getDisplayValue(state)
             state.savedValue = state.displayValue
-            state.firstNumber = true
+            state.isFirstNumber = true
             state.lastKey = '+'
         },
         calculate: state => {
@@ -52,7 +52,7 @@ const calculatorSlice = createSlice({
             state.displayValue = getDisplayValue(state)
             state.savedValue = '0'
             state.operator = ''
-            state.firstNumber = true
+            state.isFirstNumber = true
             state.lastKey = '='
         }
     },
@@ -77,8 +77,8 @@ const getDisplayValue = (state: CalculatorState, inputValue?: string): string =>
     }
 }
 
-const handleInputDot = ({displayValue, operator}: CalculatorState): string => {
-    if (displayValue === '0' || operator) {
+const handleInputDot = ({displayValue, isFirstNumber}: CalculatorState): string => {
+    if (isFirstNumber) {
         return '0.'
     }
     return displayValue.includes('.') ? displayValue : displayValue + '.';
