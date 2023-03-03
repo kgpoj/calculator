@@ -19,33 +19,43 @@ const calculatorSlice = createSlice({
     initialState,
     reducers: {
         inputNumber: (state: CalculatorState, action: PayloadAction<string>) => {
-            const value = action.payload;
+            const inputValue = action.payload;
             const currentDisplayValue = state.displayValue;
-            if (value === '.') {
+            if (inputValue === '.') {
                 state.displayValue = handleInputDot(state)
             } else if (state.firstNumber) {
-                state.displayValue = value;
+                state.displayValue = inputValue;
             } else if (getNumberOfDigits(currentDisplayValue) < 9) {
-                state.displayValue = toFormatString(removeComma(currentDisplayValue + value))
+                state.displayValue = getDisplayValue(state, inputValue)
             }
             state.firstNumber = false
         },
         plus: state => {
             state.operator = '+'
+            state.displayValue = getDisplayValue(state)
             state.savedValue = state.displayValue
             state.firstNumber = true
         },
         calculate: state => {
-            switch (state.operator) {
-                case '+':
-                    state.displayValue = toFormatString(Number(removeComma(state.savedValue)) + Number(removeComma(state.displayValue)))
-            }
+            state.displayValue = getDisplayValue(state)
             state.savedValue = '0'
             state.operator = ''
             state.firstNumber = true
         }
     },
 });
+
+const getDisplayValue = (state: CalculatorState, inputValue?: string): string => {
+    if (inputValue) {
+        return toFormatString(removeComma(state.displayValue + inputValue))
+    }
+    switch (state.operator) {
+        case '+':
+            return toFormatString(Number(removeComma(state.savedValue)) + Number(removeComma(state.displayValue)))
+        default:
+            return 'ERROR'
+    }
+}
 
 const handleInputDot = ({displayValue, operator}: CalculatorState): string => {
     if (displayValue === '0' || operator) {
