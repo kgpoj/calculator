@@ -20,6 +20,7 @@ describe('calculator reducer', () => {
             operator: '',
             savedValue: '0',
             lastOperation: '',
+            cachedOperation: '',
             lastKey: '',
             isFirstNumber: true
         }
@@ -426,5 +427,19 @@ describe('calculator reducer', () => {
                 expect(actual.displayValue).toEqual('5')
             });
         })
+    })
+
+    describe('perform multiple operations', () => {
+        it('should be executed in the correct order', () => {
+            customInitialState('1')
+
+            let actual = calculatorSlice.reducer(initialState, plus())
+            actual = calculatorSlice.reducer(actual, inputNumber('2'))
+            actual = calculatorSlice.reducer(actual, multiply())
+            actual = calculatorSlice.reducer(actual, inputNumber('3'))
+            actual = calculatorSlice.reducer(actual, calculate())
+
+            expect(actual.displayValue).toEqual('7')
+        });
     })
 })

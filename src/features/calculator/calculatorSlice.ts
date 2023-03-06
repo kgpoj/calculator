@@ -5,6 +5,7 @@ export interface CalculatorState {
     operator: string,
     savedValue: string,
     lastOperation: string,
+    cachedOperation: string
     lastKey: string,
     isFirstNumber: boolean
 }
@@ -14,6 +15,7 @@ const initialState: CalculatorState = {
     operator: '',
     savedValue: '0',
     lastOperation: '',
+    cachedOperation: '',
     lastKey: '',
     isFirstNumber: true
 }
@@ -30,7 +32,7 @@ const calculatorSlice = createSlice({
             } else if (state.isFirstNumber) {
                 state.displayValue = inputValue;
             } else if (getNumberOfDigits(currentDisplayValue) < 9) {
-                state.displayValue = getDisplayValue(state, inputValue)
+                state.displayValue = state.displayValue + inputValue
             }
             state.isFirstNumber = false
             state.lastKey = inputValue
@@ -51,7 +53,7 @@ const calculatorSlice = createSlice({
             if (state.operator) {
                 state.lastOperation = state.operator + state.displayValue
             }
-            state.displayValue = getDisplayValue(state)
+            state.displayValue = getDisplayValue(state, '')
             state.savedValue = '0'
             state.operator = ''
             state.isFirstNumber = true
@@ -60,44 +62,47 @@ const calculatorSlice = createSlice({
     },
 });
 
-const handleOperation = (state: CalculatorState, operator: string): void => {
-    if (state.operator && !['+', '-', '×', '÷'].includes(state.lastKey)) {
-        state.displayValue = getDisplayValue(state)
+const handleOperation = (state: CalculatorState, currentOperator: string): void => {
+    if (['+', '-'].includes(state.operator) && ['×', '÷'].includes(currentOperator)) {
+        state.cachedOperation = state.operator + state.savedValue
+    } else if (state.operator && !['+', '-', '×', '÷'].includes(state.lastKey)) {
+        state.displayValue = getDisplayValue(state, currentOperator)
     }
-    state.operator = operator
+    state.operator = currentOperator
     state.savedValue = state.displayValue
     state.isFirstNumber = true
-    state.lastKey = operator
+    state.lastKey = currentOperator
 }
 
-const getDisplayValue = (state: CalculatorState, inputValue?: string): string => {
-    if (inputValue) {
-        return state.displayValue + inputValue
-    }
-    switch (state.operator) {
-        case '':
-            if (!state.lastOperation) {
-                return state.displayValue
-            }
-            const lastOperator = state.lastOperation[0]
-            const lastOperatedValue = state.lastOperation.slice(1)
-            return getDisplayValue({
-                ...state,
-                savedValue: state.displayValue,
-                displayValue: lastOperatedValue,
-                operator: lastOperator
-            })
+const getCalculateResult = (saved: string, current: string, operator: string): string => {
+    switch (operator) {
         case '+':
-            return String(Number(state.savedValue) + Number(state.displayValue))
+            return String(Number(saved) + Number(current))
         case '-':
-            return String(Number(state.savedValue) - Number(state.displayValue))
+            return String(Number(saved) - Number(current))
         case '×':
-            return String(Number(state.savedValue) * Number(state.displayValue))
+            return String(Number(saved) * Number(current))
         case '÷':
-            return String(Number(state.savedValue) / Number(state.displayValue))
+            return String(Number(saved) / Number(current))
         default:
-            return 'ERROR'
+            return current
     }
+};
+
+const getDisplayValue = (state: CalculatorState, currentOperator: string): string => {
+    if (!state.operator) {
+        const lastOperator = state.lastOperation[0]
+        const lastOperatedValue = state.lastOperation.slice(1) || '0'
+        return getCalculateResult(state.displayValue, lastOperatedValue, lastOperator)
+    }
+    const currentResult = getCalculateResult(state.savedValue, state.displayValue, state.operator)
+    if (state.cachedOperation && !['×', '÷'].includes(currentOperator)) {
+        const lastOperator = state.cachedOperation[0]
+        const lastOperatedValue = state.cachedOperation.slice(1) || '0'
+        state.cachedOperation = ''
+        return getCalculateResult(currentResult, lastOperatedValue, lastOperator)
+    }
+    return currentResult
 }
 
 const handleInputDot = ({displayValue, isFirstNumber}: CalculatorState): string => {
