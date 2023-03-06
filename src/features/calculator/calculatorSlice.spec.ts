@@ -348,6 +348,83 @@ describe('calculator reducer', () => {
 
                 expect(actual.displayValue).toEqual('3')
             });
+
+            it('should result in float number', () => {
+                customInitialState('2')
+
+                let actual = calculatorSlice.reducer(initialState, divide())
+                actual = calculatorSlice.reducer(actual, inputNumber('3'))
+                actual = calculatorSlice.reducer(actual, calculate())
+
+                expect(Number(actual.displayValue)).toBeCloseTo(0.66666667)
+            });
+        })
+
+        describe('divide on float number', () => {
+            it('should perform basic divide on float number', () => {
+                customInitialState('0.12')
+
+                let actual = calculatorSlice.reducer(initialState, divide())
+                actual = calculatorSlice.reducer(actual, inputNumber('0.3'))
+                actual = calculatorSlice.reducer(actual, calculate())
+
+                expect(Number(actual.displayValue)).toBeCloseTo(0.4)
+            });
+
+            it('should perform divide on little numbers', () => {
+                customInitialState('0.00000001')
+
+                let actual = calculatorSlice.reducer(initialState, divide())
+                actual = calculatorSlice.reducer(actual, inputNumber('3'))
+                actual = calculatorSlice.reducer(actual, calculate())
+
+                expect(Number(actual.displayValue)).toBeCloseTo(3.333e-9)
+            });
+        })
+
+        describe('continuous divide', () => {
+            it('should perform continuous divide when click `÷`', () => {
+                customInitialState('10')
+
+                let actual = calculatorSlice.reducer(initialState, divide())
+                actual = calculatorSlice.reducer(actual, inputNumber('2'))
+                actual = calculatorSlice.reducer(actual, divide())
+
+                expect(actual.displayValue).toEqual('5')
+            });
+
+            it('should get correct result after continuous divide by click `÷`', () => {
+                customInitialState('10')
+
+                let actual = calculatorSlice.reducer(initialState, divide())
+                actual = calculatorSlice.reducer(actual, inputNumber('2'))
+                actual = calculatorSlice.reducer(actual, divide())
+                actual = calculatorSlice.reducer(actual, inputNumber('5'))
+                actual = calculatorSlice.reducer(actual, calculate())
+
+                expect(actual.displayValue).toEqual('1')
+            });
+
+            it('should divided by self when consecutively click `÷` and `=`', () => {
+                customInitialState('10')
+
+                let actual = calculatorSlice.reducer(initialState, divide())
+                actual = calculatorSlice.reducer(actual, calculate())
+
+                expect(actual.displayValue).toEqual('1')
+            });
+
+            it('should perform continuous divide when click `=`', () => {
+                customInitialState('40')
+
+                let actual = calculatorSlice.reducer(initialState, divide())
+                actual = calculatorSlice.reducer(actual, inputNumber('2'))
+                actual = calculatorSlice.reducer(actual, calculate())
+                actual = calculatorSlice.reducer(actual, calculate())
+                actual = calculatorSlice.reducer(actual, calculate())
+
+                expect(actual.displayValue).toEqual('5')
+            });
         })
     })
 })
