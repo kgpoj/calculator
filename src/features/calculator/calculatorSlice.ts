@@ -36,11 +36,10 @@ const calculatorSlice = createSlice({
             state.lastKey = inputValue
         },
         plus: state => {
-            if (['+', '-', '×', '÷'].includes(state.lastKey)) {
-                return
-            }
             state.operator = '+'
-            state.displayValue = getDisplayValue(state)
+            if (!['+', '-', '×', '÷'].includes(state.lastKey) && state.operator) {
+                state.displayValue = getDisplayValue(state)
+            }
             state.savedValue = state.displayValue
             state.isFirstNumber = true
             state.lastKey = '+'
