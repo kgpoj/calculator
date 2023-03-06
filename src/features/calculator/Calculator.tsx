@@ -1,6 +1,6 @@
 import React from 'react';
 import styled from "styled-components";
-import {inputNumber, plus, calculate, minus, multiply} from "./calculatorSlice";
+import {inputNumber, plus, calculate, minus, multiply, divide} from "./calculatorSlice";
 import {useAppDispatch, useAppSelector} from "../../app/hooks";
 import {toFormatString} from "../../util";
 
@@ -98,7 +98,13 @@ const Calculator = () => {
                 <Button theme={buttonTheme.FUNCTION}>C</Button>
                 <Button theme={buttonTheme.FUNCTION}>+/-</Button>
                 <Button theme={buttonTheme.FUNCTION}>%</Button>
-                <Button theme={buttonTheme.OPERATOR}>÷</Button>
+                <Button
+                    theme={buttonTheme.OPERATOR}
+                    onClick={() => dispatch(divide())}
+                    $active={lastKey === '÷'}
+                >
+                    ÷
+                </Button>
                 <Button theme={buttonTheme.NUMBER} onClick={() => dispatch(inputNumber('7'))}>7</Button>
                 <Button theme={buttonTheme.NUMBER} onClick={() => dispatch(inputNumber('8'))}>8</Button>
                 <Button theme={buttonTheme.NUMBER} onClick={() => dispatch(inputNumber('9'))}>9</Button>

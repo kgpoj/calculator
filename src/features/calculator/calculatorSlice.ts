@@ -44,6 +44,9 @@ const calculatorSlice = createSlice({
         multiply: state => {
             handleOperation(state, '×')
         },
+        divide: state => {
+            handleOperation(state, '÷')
+        },
         calculate: state => {
             if (state.operator) {
                 state.lastOperation = state.operator + state.displayValue
@@ -90,6 +93,8 @@ const getDisplayValue = (state: CalculatorState, inputValue?: string): string =>
             return String(Number(state.savedValue) - Number(state.displayValue))
         case '×':
             return String(Number(state.savedValue) * Number(state.displayValue))
+        case '÷':
+            return String(Number(state.savedValue) / Number(state.displayValue))
         default:
             return 'ERROR'
     }
@@ -112,6 +117,6 @@ const getNumberOfDigits = (str: string): number => {
     return numberCount;
 };
 
-export const {inputNumber, plus, minus, multiply, calculate} = calculatorSlice.actions
+export const {inputNumber, plus, minus, multiply, divide, calculate} = calculatorSlice.actions
 
 export default calculatorSlice
