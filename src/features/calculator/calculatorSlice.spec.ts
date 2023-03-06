@@ -1,4 +1,4 @@
-import calculatorSlice, {CalculatorState, inputNumber, plus, minus, calculate} from "./calculatorSlice";
+import calculatorSlice, {CalculatorState, inputNumber, plus, minus, calculate, multiply} from "./calculatorSlice";
 
 describe('calculator reducer', () => {
     let initialState: CalculatorState
@@ -236,4 +236,19 @@ describe('calculator reducer', () => {
             });
         })
     })
+
+    describe('perform multiply', () => {
+        describe('multiply on integer', () => {
+            it('should perform multiply on integer', () => {
+                customInitialState('3')
+
+                let actual = calculatorSlice.reducer(initialState, multiply())
+                actual = calculatorSlice.reducer(actual, inputNumber('2'))
+                actual = calculatorSlice.reducer(actual, calculate())
+
+                expect(actual.displayValue).toEqual('6')
+            });
+        })
+    })
+
 })

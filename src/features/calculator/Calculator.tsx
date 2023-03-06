@@ -1,6 +1,6 @@
 import React from 'react';
 import styled from "styled-components";
-import {inputNumber, plus, calculate, minus} from "./calculatorSlice";
+import {inputNumber, plus, calculate, minus, multiply} from "./calculatorSlice";
 import {useAppDispatch, useAppSelector} from "../../app/hooks";
 import {toFormatString} from "../../util";
 
@@ -102,13 +102,20 @@ const Calculator = () => {
                 <Button theme={buttonTheme.NUMBER} onClick={() => dispatch(inputNumber('7'))}>7</Button>
                 <Button theme={buttonTheme.NUMBER} onClick={() => dispatch(inputNumber('8'))}>8</Button>
                 <Button theme={buttonTheme.NUMBER} onClick={() => dispatch(inputNumber('9'))}>9</Button>
-                <Button theme={buttonTheme.OPERATOR}>×</Button>
+                <Button
+                    theme={buttonTheme.OPERATOR}
+                    onClick={() => dispatch(multiply())}
+                    $active={lastKey === '×'}
+                >
+                    ×
+                </Button>
                 <Button theme={buttonTheme.NUMBER} onClick={() => dispatch(inputNumber('4'))}>4</Button>
                 <Button theme={buttonTheme.NUMBER} onClick={() => dispatch(inputNumber('5'))}>5</Button>
                 <Button theme={buttonTheme.NUMBER} onClick={() => dispatch(inputNumber('6'))}>6</Button>
-                <Button theme={buttonTheme.OPERATOR}
-                        onClick={() => dispatch(minus())}
-                        $active={lastKey === '-'}
+                <Button
+                    theme={buttonTheme.OPERATOR}
+                    onClick={() => dispatch(minus())}
+                    $active={lastKey === '-'}
                 >
                     -
                 </Button>
