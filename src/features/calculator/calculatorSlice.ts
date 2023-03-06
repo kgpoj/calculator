@@ -75,7 +75,12 @@ const getDisplayValue = (state: CalculatorState, inputValue?: string): string =>
             }
             const lastOperator = state.lastOperation[0]
             const lastOperatedValue = state.lastOperation.slice(1)
-            return getDisplayValue({...state, savedValue: lastOperatedValue, operator: lastOperator})
+            return getDisplayValue({
+                ...state,
+                savedValue: state.displayValue,
+                displayValue: lastOperatedValue,
+                operator: lastOperator
+            })
         case '+':
             return String(Number(state.savedValue) + Number(state.displayValue))
         case '-':

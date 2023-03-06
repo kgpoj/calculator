@@ -222,6 +222,18 @@ describe('calculator reducer', () => {
 
                 expect(actual.displayValue).toEqual('0')
             });
+
+            it('should perform continuous minus when click `=`', () => {
+                customInitialState('5')
+
+                let actual = calculatorSlice.reducer(initialState, minus())
+                actual = calculatorSlice.reducer(actual, inputNumber('3'))
+                actual = calculatorSlice.reducer(actual, calculate())
+                actual = calculatorSlice.reducer(actual, calculate())
+                actual = calculatorSlice.reducer(actual, calculate())
+
+                expect(actual.displayValue).toEqual('-4')
+            });
         })
     })
 })
