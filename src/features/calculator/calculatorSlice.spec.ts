@@ -248,6 +248,84 @@ describe('calculator reducer', () => {
 
                 expect(actual.displayValue).toEqual('6')
             });
+
+            it('should perform multiply on large numbers', () => {
+                customInitialState('999999999')
+
+                let actual = calculatorSlice.reducer(initialState, multiply())
+                actual = calculatorSlice.reducer(actual, inputNumber('999999999'))
+                actual = calculatorSlice.reducer(actual, calculate())
+
+                expect(actual.displayValue).toEqual('999999998000000000')
+            });
+        })
+
+        describe('multiply on float number', () => {
+            it('should perform basic multiply on float number', () => {
+                customInitialState('3.1')
+
+                let actual = calculatorSlice.reducer(initialState, multiply())
+                actual = calculatorSlice.reducer(actual, inputNumber('1.2'))
+                actual = calculatorSlice.reducer(actual, calculate())
+
+                expect(Number(actual.displayValue)).toBeCloseTo(3.72)
+            });
+
+            it('should perform multiply on little numbers', () => {
+                customInitialState('0.00000001')
+
+                let actual = calculatorSlice.reducer(initialState, multiply())
+                actual = calculatorSlice.reducer(actual, inputNumber('0.00000001'))
+                actual = calculatorSlice.reducer(actual, calculate())
+
+                expect(Number(actual.displayValue)).toBeCloseTo(1e-16)
+
+            });
+        })
+
+        describe('continuous multiply', () => {
+            it('should perform continuous multiply when click `×`', () => {
+                customInitialState('5')
+
+                let actual = calculatorSlice.reducer(initialState, multiply())
+                actual = calculatorSlice.reducer(actual, inputNumber('2'))
+                actual = calculatorSlice.reducer(actual, multiply())
+
+                expect(actual.displayValue).toEqual('10')
+            });
+
+            it('should get correct result after continuous multiply by click `×`', () => {
+                customInitialState('5')
+
+                let actual = calculatorSlice.reducer(initialState, multiply())
+                actual = calculatorSlice.reducer(actual, inputNumber('2'))
+                actual = calculatorSlice.reducer(actual, multiply())
+                actual = calculatorSlice.reducer(actual, inputNumber('2'))
+                actual = calculatorSlice.reducer(actual, calculate())
+
+                expect(actual.displayValue).toEqual('20')
+            });
+
+            it('should multiplied by self when consecutively click `×` and `=`', () => {
+                customInitialState('10')
+
+                let actual = calculatorSlice.reducer(initialState, multiply())
+                actual = calculatorSlice.reducer(actual, calculate())
+
+                expect(actual.displayValue).toEqual('100')
+            });
+
+            it('should perform continuous multiply when click `=`', () => {
+                customInitialState('5')
+
+                let actual = calculatorSlice.reducer(initialState, multiply())
+                actual = calculatorSlice.reducer(actual, inputNumber('2'))
+                actual = calculatorSlice.reducer(actual, calculate())
+                actual = calculatorSlice.reducer(actual, calculate())
+                actual = calculatorSlice.reducer(actual, calculate())
+
+                expect(actual.displayValue).toEqual('40')
+            });
         })
     })
 
