@@ -36,13 +36,10 @@ const calculatorSlice = createSlice({
             state.lastKey = inputValue
         },
         plus: state => {
-            state.operator = '+'
-            if (!['+', '-', '×', '÷'].includes(state.lastKey) && state.operator) {
-                state.displayValue = getDisplayValue(state)
-            }
-            state.savedValue = state.displayValue
-            state.isFirstNumber = true
-            state.lastKey = '+'
+            handleOperation(state, '+')
+        },
+        minus: state => {
+            handleOperation(state, '-')
         },
         calculate: state => {
             if (state.operator) {
@@ -56,6 +53,16 @@ const calculatorSlice = createSlice({
         }
     },
 });
+
+const handleOperation = (state: CalculatorState, operator: string): void => {
+    if (state.operator && !['+', '-', '×', '÷'].includes(state.lastKey)) {
+        state.displayValue = getDisplayValue(state)
+    }
+    state.operator = operator
+    state.savedValue = state.displayValue
+    state.isFirstNumber = true
+    state.lastKey = operator
+}
 
 const getDisplayValue = (state: CalculatorState, inputValue?: string): string => {
     if (inputValue) {
@@ -71,6 +78,8 @@ const getDisplayValue = (state: CalculatorState, inputValue?: string): string =>
             return getDisplayValue({...state, savedValue: lastOperatedValue, operator: lastOperator})
         case '+':
             return String(Number(state.savedValue) + Number(state.displayValue))
+        case '-':
+            return String(Number(state.savedValue) - Number(state.displayValue))
         default:
             return 'ERROR'
     }
@@ -93,6 +102,6 @@ const getNumberOfDigits = (str: string): number => {
     return numberCount;
 };
 
-export const {inputNumber, plus, calculate} = calculatorSlice.actions
+export const {inputNumber, plus, minus, calculate} = calculatorSlice.actions
 
 export default calculatorSlice
