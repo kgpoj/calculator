@@ -68,8 +68,12 @@ const calculatorSlice = createSlice({
             state.prevOperator = ''
         },
         percentage: state => {
+            if (['+', '-', '*', '/'].includes(state.prevKey)) {
+                state.displayValue = String(Number(state.displayValue) * Number(state.displayValue))
+            }
             state.displayValue = String(Number(state.displayValue) / 100)
             updateExpressionByDisplayValue(state)
+            state.prevKey = '%'
         }
     },
 });

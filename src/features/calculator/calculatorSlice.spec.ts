@@ -485,6 +485,16 @@ describe('calculator reducer', () => {
 
             expect(actual.displayValue).toEqual('1.99')
         });
+
+        it('should handle click operator and percentage', () => {
+            customInitialState('2')
+
+            let actual = calculatorSlice.reducer(initialState, plus())
+            actual = calculatorSlice.reducer(actual, percentage())
+            actual = calculatorSlice.reducer(actual, calculate())
+
+            expect(actual.displayValue).toEqual('2.04')
+        });
     })
 
 })
