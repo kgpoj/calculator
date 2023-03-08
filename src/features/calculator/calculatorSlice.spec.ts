@@ -505,5 +505,16 @@ describe('calculator reducer', () => {
 
             expect(actual.displayValue).toEqual('-99')
         });
+
+        it('should get correct result after calculation on value switched sign', () => {
+            customInitialState('99')
+
+            let actual = calculatorSlice.reducer(initialState, switchSign())
+            actual = calculatorSlice.reducer(actual, plus())
+            actual = calculatorSlice.reducer(actual, inputNumber('1'))
+            actual = calculatorSlice.reducer(actual, calculate())
+
+            expect(actual.displayValue).toEqual('-98')
+        });
     })
 })

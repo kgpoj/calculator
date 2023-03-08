@@ -77,6 +77,7 @@ const calculatorSlice = createSlice({
         },
         switchSign: state => {
             state.displayValue = String(Number(state.displayValue) * -1)
+            updateExpressionByDisplayValue(state)
             state.prevKey = '+/-'
         }
     },
