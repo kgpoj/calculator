@@ -13,15 +13,15 @@ describe('calculator reducer', () => {
     const customInitialState = (displayValue: string): void => {
         initialState.displayValue = displayValue
         initialState.isFirstNumber = false
+        initialState.expression = displayValue
     }
     beforeEach(() => {
         initialState = {
             displayValue: '0',
-            operator: '',
-            savedValue: '0',
-            lastOperation: '',
-            cachedOperation: '',
-            lastKey: '',
+            prevOperator: '',
+            expression: '',
+            prevOperation: '',
+            prevKey: '',
             isFirstNumber: true
         }
     })
@@ -440,6 +440,28 @@ describe('calculator reducer', () => {
             actual = calculatorSlice.reducer(actual, calculate())
 
             expect(actual.displayValue).toEqual('7')
+        });
+
+        it('should display previous value', () => {
+            customInitialState('1')
+
+            let actual = calculatorSlice.reducer(initialState, plus())
+            actual = calculatorSlice.reducer(actual, inputNumber('2'))
+            actual = calculatorSlice.reducer(actual, plus())
+            actual = calculatorSlice.reducer(actual, multiply())
+
+            expect(actual.displayValue).toEqual('2')
+        });
+
+        it('should display plus result', () => {
+            customInitialState('1')
+
+            let actual = calculatorSlice.reducer(initialState, plus())
+            actual = calculatorSlice.reducer(actual, inputNumber('2'))
+            actual = calculatorSlice.reducer(actual, multiply())
+            actual = calculatorSlice.reducer(actual, plus())
+
+            expect(actual.displayValue).toEqual('3')
         });
     })
 })

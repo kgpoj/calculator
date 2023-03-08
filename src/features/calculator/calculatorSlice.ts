@@ -2,21 +2,19 @@ import {createSlice, PayloadAction} from "@reduxjs/toolkit";
 
 export interface CalculatorState {
     displayValue: string,
-    operator: string,
-    savedValue: string,
-    lastOperation: string,
-    cachedOperation: string
-    lastKey: string,
+    prevOperator: string,
+    expression: string
+    prevOperation: string,
+    prevKey: string,
     isFirstNumber: boolean
 }
 
 const initialState: CalculatorState = {
     displayValue: '0',
-    operator: '',
-    savedValue: '0',
-    lastOperation: '',
-    cachedOperation: '',
-    lastKey: '',
+    prevOperator: '',
+    expression: '',
+    prevOperation: '',
+    prevKey: '',
     isFirstNumber: true
 }
 
@@ -28,14 +26,22 @@ const calculatorSlice = createSlice({
             const inputValue = action.payload;
             const currentDisplayValue = state.displayValue;
             if (inputValue === '.') {
-                state.displayValue = handleInputDot(state)
+                if (state.isFirstNumber) {
+                    state.displayValue = '0.'
+                    state.expression += '0.'
+                } else if (!currentDisplayValue.includes('.')) {
+                    state.displayValue += '.'
+                    state.expression += '.'
+                }
             } else if (state.isFirstNumber) {
                 state.displayValue = inputValue;
+                state.expression += inputValue
             } else if (getNumberOfDigits(currentDisplayValue) < 9) {
-                state.displayValue = state.displayValue + inputValue
+                state.displayValue += inputValue
+                state.expression += inputValue
             }
             state.isFirstNumber = false
-            state.lastKey = inputValue
+            state.prevKey = inputValue
         },
         plus: state => {
             handleOperation(state, '+')
@@ -44,72 +50,50 @@ const calculatorSlice = createSlice({
             handleOperation(state, '-')
         },
         multiply: state => {
-            handleOperation(state, '×')
+            handleOperation(state, '*')
         },
         divide: state => {
-            handleOperation(state, '÷')
+            handleOperation(state, '/')
         },
         calculate: state => {
-            if (state.operator) {
-                state.lastOperation = state.operator + state.displayValue
+            if (['+', '-', '*', '/'].includes(state.prevKey)) {
+                state.expression += state.displayValue
+                state.prevOperation = state.prevOperator + state.displayValue
+            } else if (state.prevOperator) {
+                state.prevOperation = state.prevOperator + state.displayValue
+            } else {
+                state.expression = state.displayValue + state.prevOperation
             }
-            state.displayValue = getDisplayValue(state, '')
-            state.savedValue = '0'
-            state.operator = ''
+
+            const expressionResult = getExpressionResult(state.expression);
+            state.displayValue = expressionResult
+            state.expression = expressionResult
             state.isFirstNumber = true
-            state.lastKey = '='
+            state.prevKey = '='
+            state.prevOperator = ''
         }
     },
 });
 
+const getExpressionResult = (expression: string): string => {
+    // eslint-disable-next-line no-new-func
+    const func = new Function(`return ${expression}`)
+    return String(func() || 0)
+}
+
 const handleOperation = (state: CalculatorState, currentOperator: string): void => {
-    if (['+', '-'].includes(state.operator) && ['×', '÷'].includes(currentOperator)) {
-        state.cachedOperation = state.operator + state.savedValue
-    } else if (state.operator && !['+', '-', '×', '÷'].includes(state.lastKey)) {
-        state.displayValue = getDisplayValue(state, currentOperator)
+    state.expression = state.expression.replace(/[+\-*/]$/, '') || '0'
+
+    const lastPlusOrMinusIndex = state.expression.replaceAll(/(\d)[+-]/g, '$1#').lastIndexOf('#')
+    if (['*', '/'].includes(currentOperator) && lastPlusOrMinusIndex !== -1) {
+        state.displayValue = getExpressionResult(state.expression.slice(lastPlusOrMinusIndex + 1))
+    } else {
+        state.displayValue = getExpressionResult(state.expression)
     }
-    state.operator = currentOperator
-    state.savedValue = state.displayValue
+    state.prevOperator = currentOperator
+    state.expression += currentOperator
     state.isFirstNumber = true
-    state.lastKey = currentOperator
-}
-
-const getCalculateResult = (saved: string, current: string, operator: string): string => {
-    switch (operator) {
-        case '+':
-            return String(Number(saved) + Number(current))
-        case '-':
-            return String(Number(saved) - Number(current))
-        case '×':
-            return String(Number(saved) * Number(current))
-        case '÷':
-            return String(Number(saved) / Number(current))
-        default:
-            return current
-    }
-};
-
-const getDisplayValue = (state: CalculatorState, currentOperator: string): string => {
-    if (!state.operator) {
-        const lastOperator = state.lastOperation[0]
-        const lastOperatedValue = state.lastOperation.slice(1) || '0'
-        return getCalculateResult(state.displayValue, lastOperatedValue, lastOperator)
-    }
-    const currentResult = getCalculateResult(state.savedValue, state.displayValue, state.operator)
-    if (state.cachedOperation && !['×', '÷'].includes(currentOperator)) {
-        const lastOperator = state.cachedOperation[0]
-        const lastOperatedValue = state.cachedOperation.slice(1) || '0'
-        state.cachedOperation = ''
-        return getCalculateResult(currentResult, lastOperatedValue, lastOperator)
-    }
-    return currentResult
-}
-
-const handleInputDot = ({displayValue, isFirstNumber}: CalculatorState): string => {
-    if (isFirstNumber) {
-        return '0.'
-    }
-    return displayValue.includes('.') ? displayValue : displayValue + '.';
+    state.prevKey = currentOperator
 }
 
 const getNumberOfDigits = (str: string): number => {

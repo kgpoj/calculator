@@ -50,12 +50,12 @@ const OperationWrapper = styled.div`
 `
 
 interface CalculatorButtonProps {
-    $active?: boolean
+    active?: boolean
 }
 
 const Button = styled.button.attrs<CalculatorButtonProps>(props => ({
     theme: props.theme || buttonTheme.NUMBER,
-    $active: props.$active || false
+    active: props.active || false
 }))<CalculatorButtonProps>`
   color: ${({theme}) => theme === buttonTheme.FUNCTION ? 'black' : 'white'};
   background-color: ${({theme}) => {
@@ -78,7 +78,7 @@ const Button = styled.button.attrs<CalculatorButtonProps>(props => ({
   font-size: 50px;
   transition: all .2s cubic-bezier(.645, .045, .355, 1);
   ${props => {
-    if (props.$active) {
+    if (props.active) {
       return {
         backgroundColor: 'white',
         color: '#f1a33c'
@@ -88,7 +88,7 @@ const Button = styled.button.attrs<CalculatorButtonProps>(props => ({
 `
 const Calculator = () => {
     const displayValue = useAppSelector(state => state.displayValue);
-    const lastKey = useAppSelector(state => state.lastKey);
+    const prevKey = useAppSelector(state => state.prevKey);
     const dispatch = useAppDispatch();
 
     return (
@@ -101,7 +101,7 @@ const Calculator = () => {
                 <Button
                     theme={buttonTheme.OPERATOR}
                     onClick={() => dispatch(divide())}
-                    $active={lastKey === '÷'}
+                    active={prevKey === '/'}
                 >
                     ÷
                 </Button>
@@ -111,7 +111,7 @@ const Calculator = () => {
                 <Button
                     theme={buttonTheme.OPERATOR}
                     onClick={() => dispatch(multiply())}
-                    $active={lastKey === '×'}
+                    active={prevKey === '*'}
                 >
                     ×
                 </Button>
@@ -121,7 +121,7 @@ const Calculator = () => {
                 <Button
                     theme={buttonTheme.OPERATOR}
                     onClick={() => dispatch(minus())}
-                    $active={lastKey === '-'}
+                    active={prevKey === '-'}
                 >
                     -
                 </Button>
@@ -131,7 +131,7 @@ const Calculator = () => {
                 <Button
                     theme={buttonTheme.OPERATOR}
                     onClick={() => dispatch(plus())}
-                    $active={lastKey === '+'}
+                    active={prevKey === '+'}
                 >
                     +
                 </Button>
