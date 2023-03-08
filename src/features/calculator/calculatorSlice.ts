@@ -6,7 +6,7 @@ export interface CalculatorState {
     expression: string
     prevOperation: string,
     prevKey: string,
-    test:string,
+    test: string,
     isFirstNumber: boolean
 }
 
@@ -76,7 +76,11 @@ const calculatorSlice = createSlice({
             state.prevKey = '%'
         },
         switchSign: state => {
-            state.displayValue = String(Number(state.displayValue) * -1)
+            if (state.isFirstNumber) {
+                state.displayValue = '-0'
+            } else {
+                state.displayValue = String(Number(state.displayValue) * -1)
+            }
             updateExpressionByDisplayValue(state)
             state.prevKey = '+/-'
         }

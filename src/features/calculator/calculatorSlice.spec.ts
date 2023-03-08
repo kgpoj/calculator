@@ -516,5 +516,16 @@ describe('calculator reducer', () => {
 
             expect(actual.displayValue).toEqual('-98')
         });
+
+        describe('handle click operator and switch sign', () => {
+            it('should display `-0` after click operator and switch sign', () => {
+                customInitialState('2')
+
+                let actual = calculatorSlice.reducer(initialState, plus())
+                actual = calculatorSlice.reducer(actual, switchSign())
+
+                expect(actual.displayValue).toEqual('-0')
+            });
+        })
     })
 })
