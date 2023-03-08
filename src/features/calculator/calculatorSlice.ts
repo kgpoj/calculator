@@ -6,6 +6,7 @@ export interface CalculatorState {
     expression: string
     prevOperation: string,
     prevKey: string,
+    test:string
     isFirstNumber: boolean
 }
 
@@ -15,6 +16,7 @@ const initialState: CalculatorState = {
     expression: '',
     prevOperation: '',
     prevKey: '',
+    test: '',
     isFirstNumber: true
 }
 
@@ -28,18 +30,15 @@ const calculatorSlice = createSlice({
             if (inputValue === '.') {
                 if (state.isFirstNumber) {
                     state.displayValue = '0.'
-                    state.expression += '0.'
                 } else if (!currentDisplayValue.includes('.')) {
                     state.displayValue += '.'
-                    state.expression += '.'
                 }
             } else if (state.isFirstNumber) {
                 state.displayValue = inputValue;
-                state.expression += inputValue
             } else if (getNumberOfDigits(currentDisplayValue) < 9) {
                 state.displayValue += inputValue
-                state.expression += inputValue
             }
+            updateExpressionByDisplayValue(state)
             state.isFirstNumber = false
             state.prevKey = inputValue
         },
@@ -74,9 +73,15 @@ const calculatorSlice = createSlice({
         },
         percentage: state => {
             state.displayValue = String(Number(state.displayValue) / 100)
+            updateExpressionByDisplayValue(state)
         }
     },
 });
+
+const updateExpressionByDisplayValue = (state: CalculatorState): void => {
+    const lastNumberReg = /((\D?-)?\d+(\.\d*)?)?$/;
+    state.expression = state.expression.replace(lastNumberReg, state.displayValue);
+}
 
 const getExpressionResult = (expression: string): string => {
     // eslint-disable-next-line no-new-func

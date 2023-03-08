@@ -22,6 +22,7 @@ describe('calculator reducer', () => {
             expression: '',
             prevOperation: '',
             prevKey: '',
+            test: '',
             isFirstNumber: true
         }
     })
@@ -472,6 +473,17 @@ describe('calculator reducer', () => {
             let actual = calculatorSlice.reducer(initialState, percentage())
 
             expect(actual.displayValue).toEqual('0.99')
+        });
+
+        it('should get correct result after calculation on percentage value', () => {
+            customInitialState('99')
+
+            let actual = calculatorSlice.reducer(initialState, percentage())
+            actual = calculatorSlice.reducer(actual, plus())
+            actual = calculatorSlice.reducer(actual, inputNumber('1'))
+            actual = calculatorSlice.reducer(actual, calculate())
+
+            expect(actual.displayValue).toEqual('1.99')
         });
     })
 
