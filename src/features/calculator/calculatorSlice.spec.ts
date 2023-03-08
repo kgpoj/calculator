@@ -526,6 +526,16 @@ describe('calculator reducer', () => {
 
                 expect(actual.displayValue).toEqual('-0')
             });
+
+            it('should correctly input negative numbers', () => {
+                customInitialState('2')
+
+                let actual = calculatorSlice.reducer(initialState, plus())
+                actual = calculatorSlice.reducer(actual, switchSign())
+                actual = calculatorSlice.reducer(actual, inputNumber('3'))
+
+                expect(actual.displayValue).toEqual('-3')
+            });
         })
     })
 })

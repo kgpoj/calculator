@@ -30,7 +30,7 @@ const calculatorSlice = createSlice({
             if (inputValue === '.') {
                 state.displayValue = handleInputDot(state.isFirstNumber, currentDisplayValue)
             } else if (state.isFirstNumber) {
-                state.displayValue = inputValue;
+                state.displayValue = state.displayValue === '-0' ? `-${inputValue}` : inputValue;
             } else if (getNumberOfDigits(currentDisplayValue) < 9) {
                 state.displayValue += inputValue
             }
@@ -76,7 +76,7 @@ const calculatorSlice = createSlice({
             state.prevKey = '%'
         },
         switchSign: state => {
-            if (state.isFirstNumber) {
+            if (['+', '-', '*', '/'].includes(state.prevKey) || state.displayValue === '0') {
                 state.displayValue = '-0'
             } else {
                 state.displayValue = String(Number(state.displayValue) * -1)
