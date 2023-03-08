@@ -6,7 +6,7 @@ export interface CalculatorState {
     expression: string
     prevOperation: string,
     prevKey: string,
-    test:string
+    test:string,
     isFirstNumber: boolean
 }
 
@@ -74,6 +74,10 @@ const calculatorSlice = createSlice({
             state.displayValue = String(Number(state.displayValue) / 100)
             updateExpressionByDisplayValue(state)
             state.prevKey = '%'
+        },
+        switchSign: state => {
+            state.displayValue = String(Number(state.displayValue) * -1)
+            state.prevKey = '+/-'
         }
     },
 });
@@ -122,6 +126,6 @@ const getNumberOfDigits = (str: string): number => {
     return numberCount;
 };
 
-export const {inputNumber, plus, minus, multiply, divide, calculate, percentage} = calculatorSlice.actions
+export const {inputNumber, plus, minus, multiply, divide, calculate, percentage, switchSign} = calculatorSlice.actions
 
 export default calculatorSlice

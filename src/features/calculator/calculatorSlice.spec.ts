@@ -5,7 +5,7 @@ import calculatorSlice, {
     minus,
     calculate,
     multiply,
-    divide, percentage
+    divide, percentage, switchSign
 } from "./calculatorSlice";
 
 describe('calculator reducer', () => {
@@ -497,4 +497,13 @@ describe('calculator reducer', () => {
         });
     })
 
+    describe('perform switch between negative and positive', () => {
+        it('should get correct display value after switch', () => {
+            customInitialState('99')
+
+            let actual = calculatorSlice.reducer(initialState, switchSign())
+
+            expect(actual.displayValue).toEqual('-99')
+        });
+    })
 })
