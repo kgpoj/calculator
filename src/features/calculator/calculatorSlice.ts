@@ -71,6 +71,9 @@ const calculatorSlice = createSlice({
             state.isFirstNumber = true
             state.prevKey = '='
             state.prevOperator = ''
+        },
+        percentage: state => {
+            state.displayValue = String(Number(state.displayValue) / 100)
         }
     },
 });
@@ -106,6 +109,6 @@ const getNumberOfDigits = (str: string): number => {
     return numberCount;
 };
 
-export const {inputNumber, plus, minus, multiply, divide, calculate} = calculatorSlice.actions
+export const {inputNumber, plus, minus, multiply, divide, calculate, percentage} = calculatorSlice.actions
 
 export default calculatorSlice

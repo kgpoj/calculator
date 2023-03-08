@@ -5,7 +5,7 @@ import calculatorSlice, {
     minus,
     calculate,
     multiply,
-    divide
+    divide, percentage
 } from "./calculatorSlice";
 
 describe('calculator reducer', () => {
@@ -464,4 +464,15 @@ describe('calculator reducer', () => {
             expect(actual.displayValue).toEqual('3')
         });
     })
+
+    describe('perform percentage', () => {
+        it('should get correct display value after percentage', () => {
+            customInitialState('99')
+
+            let actual = calculatorSlice.reducer(initialState, percentage())
+
+            expect(actual.displayValue).toEqual('0.99')
+        });
+    })
+
 })
