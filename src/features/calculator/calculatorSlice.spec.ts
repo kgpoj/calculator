@@ -536,6 +536,17 @@ describe('calculator reducer', () => {
 
                 expect(actual.displayValue).toEqual('-3')
             });
+
+            it('should get correct result after calculation on negative numbers', () => {
+                customInitialState('2')
+
+                let actual = calculatorSlice.reducer(initialState, minus())
+                actual = calculatorSlice.reducer(actual, switchSign())
+                actual = calculatorSlice.reducer(actual, inputNumber('3'))
+                actual = calculatorSlice.reducer(actual, calculate())
+
+                expect(actual.displayValue).toEqual('5')
+            });
         })
     })
 })

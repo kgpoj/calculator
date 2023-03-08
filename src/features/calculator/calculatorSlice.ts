@@ -96,12 +96,13 @@ const handleInputDot = (isFirstNumber: boolean, currentDisplayValue: string): st
 }
 
 const updateExpressionByDisplayValue = (state: CalculatorState): void => {
-    const lastNumberReg = /((\D?-)?\d+(\.\d*)?)?$/;
+    const lastNumberReg = /(((?<=\D|^)-)?\d+(\.\d*)?)?$/;
     state.expression = state.expression.replace(lastNumberReg, state.displayValue);
 }
 
 const getExpressionResult = (expression: string): string => {
     // eslint-disable-next-line no-new-func
+    expression =  expression.replaceAll('--', '+')
     const func = new Function(`return ${expression}`)
     return String(func() || 0)
 }
