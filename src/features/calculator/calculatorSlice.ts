@@ -119,15 +119,19 @@ const getExpressionResult = (expression: string): string => {
     }
 }
 
+const getDisplayValue = (expression: string, currentOperator: string) => {
+    const lastPlusOrMinusIndex = expression.replaceAll(/(\d)[+-]/g, '$1#').lastIndexOf('#')
+    if (['*', '/'].includes(currentOperator)) {
+        return getExpressionResult(expression.slice(lastPlusOrMinusIndex + 1))
+    } else {
+        return getExpressionResult(expression)
+    }
+}
+
 const handleOperation = (state: CalculatorState, currentOperator: string): void => {
     state.expression = state.expression.replace(/[+\-*/]$/, '') || '0'
 
-    const lastPlusOrMinusIndex = state.expression.replaceAll(/(\d)[+-]/g, '$1#').lastIndexOf('#')
-    if (['*', '/'].includes(currentOperator) && lastPlusOrMinusIndex !== -1) {
-        state.displayValue = getExpressionResult(state.expression.slice(lastPlusOrMinusIndex + 1))
-    } else {
-        state.displayValue = getExpressionResult(state.expression)
-    }
+    state.displayValue = getDisplayValue(state.expression, currentOperator)
     state.prevOperator = currentOperator
     state.expression += currentOperator
     state.isFirstNumber = true
