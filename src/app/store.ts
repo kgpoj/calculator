@@ -1,8 +1,8 @@
 import { configureStore } from '@reduxjs/toolkit';
-import calculatorSlice from "../features/calculator/calculatorSlice";
+import calculatorSlice from '../features/calculator/calculatorSlice';
 
 export const store = configureStore({
-  reducer: calculatorSlice.reducer
+  reducer: calculatorSlice.reducer,
 });
 
 export type AppDispatch = typeof store.dispatch;
