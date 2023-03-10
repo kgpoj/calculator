@@ -6,7 +6,7 @@ export interface CalculatorState {
     expression: string
     prevOperation: string,
     prevKey: string,
-    test:string
+    test: string,
     isFirstNumber: boolean
 }
 
@@ -30,7 +30,7 @@ const calculatorSlice = createSlice({
             if (inputValue === '.') {
                 state.displayValue = handleInputDot(state.isFirstNumber, currentDisplayValue)
             } else if (state.isFirstNumber) {
-                state.displayValue = inputValue;
+                state.displayValue = state.displayValue === '-0' ? `-${inputValue}` : inputValue;
             } else if (getNumberOfDigits(currentDisplayValue) < 9) {
                 state.displayValue += inputValue
             }
@@ -74,6 +74,15 @@ const calculatorSlice = createSlice({
             state.displayValue = String(Number(state.displayValue) / 100)
             updateExpressionByDisplayValue(state)
             state.prevKey = '%'
+        },
+        switchSign: state => {
+            if (['+', '-', '*', '/'].includes(state.prevKey) || state.displayValue === '0') {
+                state.displayValue = '-0'
+            } else {
+                state.displayValue = String(Number(state.displayValue) * -1)
+            }
+            updateExpressionByDisplayValue(state)
+            state.prevKey = '+/-'
         }
     },
 });
@@ -87,12 +96,13 @@ const handleInputDot = (isFirstNumber: boolean, currentDisplayValue: string): st
 }
 
 const updateExpressionByDisplayValue = (state: CalculatorState): void => {
-    const lastNumberReg = /((\D?-)?\d+(\.\d*)?)?$/;
+    const lastNumberReg = /(((?<=\D|^)-)?\d+(\.\d*)?)?$/;
     state.expression = state.expression.replace(lastNumberReg, state.displayValue);
 }
 
 const getExpressionResult = (expression: string): string => {
     // eslint-disable-next-line no-new-func
+    expression =  expression.replaceAll('--', '+')
     const func = new Function(`return ${expression}`)
     return String(func() || 0)
 }
@@ -122,6 +132,6 @@ const getNumberOfDigits = (str: string): number => {
     return numberCount;
 };
 
-export const {inputNumber, plus, minus, multiply, divide, calculate, percentage} = calculatorSlice.actions
+export const {inputNumber, plus, minus, multiply, divide, calculate, percentage, switchSign} = calculatorSlice.actions
 
 export default calculatorSlice

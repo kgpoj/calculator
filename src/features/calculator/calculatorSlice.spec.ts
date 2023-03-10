@@ -5,7 +5,7 @@ import calculatorSlice, {
     minus,
     calculate,
     multiply,
-    divide, percentage
+    divide, percentage, switchSign
 } from "./calculatorSlice";
 
 describe('calculator reducer', () => {
@@ -497,4 +497,56 @@ describe('calculator reducer', () => {
         });
     })
 
+    describe('perform switch between negative and positive', () => {
+        it('should get correct display value after switch', () => {
+            customInitialState('99')
+
+            let actual = calculatorSlice.reducer(initialState, switchSign())
+
+            expect(actual.displayValue).toEqual('-99')
+        });
+
+        it('should get correct result after calculation on value switched sign', () => {
+            customInitialState('99')
+
+            let actual = calculatorSlice.reducer(initialState, switchSign())
+            actual = calculatorSlice.reducer(actual, plus())
+            actual = calculatorSlice.reducer(actual, inputNumber('1'))
+            actual = calculatorSlice.reducer(actual, calculate())
+
+            expect(actual.displayValue).toEqual('-98')
+        });
+
+        describe('handle click operator and switch sign', () => {
+            it('should display `-0` after click operator and switch sign', () => {
+                customInitialState('2')
+
+                let actual = calculatorSlice.reducer(initialState, plus())
+                actual = calculatorSlice.reducer(actual, switchSign())
+
+                expect(actual.displayValue).toEqual('-0')
+            });
+
+            it('should correctly input negative numbers', () => {
+                customInitialState('2')
+
+                let actual = calculatorSlice.reducer(initialState, plus())
+                actual = calculatorSlice.reducer(actual, switchSign())
+                actual = calculatorSlice.reducer(actual, inputNumber('3'))
+
+                expect(actual.displayValue).toEqual('-3')
+            });
+
+            it('should get correct result after calculation on negative numbers', () => {
+                customInitialState('2')
+
+                let actual = calculatorSlice.reducer(initialState, minus())
+                actual = calculatorSlice.reducer(actual, switchSign())
+                actual = calculatorSlice.reducer(actual, inputNumber('3'))
+                actual = calculatorSlice.reducer(actual, calculate())
+
+                expect(actual.displayValue).toEqual('5')
+            });
+        })
+    })
 })
