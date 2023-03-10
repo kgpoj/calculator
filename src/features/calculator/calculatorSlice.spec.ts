@@ -5,7 +5,7 @@ import calculatorSlice, {
     minus,
     calculate,
     multiply,
-    divide
+    divide, percentage
 } from "./calculatorSlice";
 
 describe('calculator reducer', () => {
@@ -22,6 +22,7 @@ describe('calculator reducer', () => {
             expression: '',
             prevOperation: '',
             prevKey: '',
+            test: '',
             isFirstNumber: true
         }
     })
@@ -464,4 +465,36 @@ describe('calculator reducer', () => {
             expect(actual.displayValue).toEqual('3')
         });
     })
+
+    describe('perform percentage', () => {
+        it('should get correct display value after percentage', () => {
+            customInitialState('99')
+
+            let actual = calculatorSlice.reducer(initialState, percentage())
+
+            expect(actual.displayValue).toEqual('0.99')
+        });
+
+        it('should get correct result after calculation on percentage value', () => {
+            customInitialState('99')
+
+            let actual = calculatorSlice.reducer(initialState, percentage())
+            actual = calculatorSlice.reducer(actual, plus())
+            actual = calculatorSlice.reducer(actual, inputNumber('1'))
+            actual = calculatorSlice.reducer(actual, calculate())
+
+            expect(actual.displayValue).toEqual('1.99')
+        });
+
+        it('should handle click operator and percentage', () => {
+            customInitialState('2')
+
+            let actual = calculatorSlice.reducer(initialState, plus())
+            actual = calculatorSlice.reducer(actual, percentage())
+            actual = calculatorSlice.reducer(actual, calculate())
+
+            expect(actual.displayValue).toEqual('2.04')
+        });
+    })
+
 })

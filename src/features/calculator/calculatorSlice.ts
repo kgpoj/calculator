@@ -6,6 +6,7 @@ export interface CalculatorState {
     expression: string
     prevOperation: string,
     prevKey: string,
+    test:string
     isFirstNumber: boolean
 }
 
@@ -15,6 +16,7 @@ const initialState: CalculatorState = {
     expression: '',
     prevOperation: '',
     prevKey: '',
+    test: '',
     isFirstNumber: true
 }
 
@@ -26,20 +28,13 @@ const calculatorSlice = createSlice({
             const inputValue = action.payload;
             const currentDisplayValue = state.displayValue;
             if (inputValue === '.') {
-                if (state.isFirstNumber) {
-                    state.displayValue = '0.'
-                    state.expression += '0.'
-                } else if (!currentDisplayValue.includes('.')) {
-                    state.displayValue += '.'
-                    state.expression += '.'
-                }
+                state.displayValue = handleInputDot(state.isFirstNumber, currentDisplayValue)
             } else if (state.isFirstNumber) {
                 state.displayValue = inputValue;
-                state.expression += inputValue
             } else if (getNumberOfDigits(currentDisplayValue) < 9) {
                 state.displayValue += inputValue
-                state.expression += inputValue
             }
+            updateExpressionByDisplayValue(state)
             state.isFirstNumber = false
             state.prevKey = inputValue
         },
@@ -71,9 +66,30 @@ const calculatorSlice = createSlice({
             state.isFirstNumber = true
             state.prevKey = '='
             state.prevOperator = ''
+        },
+        percentage: state => {
+            if (['+', '-', '*', '/'].includes(state.prevKey)) {
+                state.displayValue = String(Number(state.displayValue) * Number(state.displayValue))
+            }
+            state.displayValue = String(Number(state.displayValue) / 100)
+            updateExpressionByDisplayValue(state)
+            state.prevKey = '%'
         }
     },
 });
+
+const handleInputDot = (isFirstNumber: boolean, currentDisplayValue: string): string => {
+    if (isFirstNumber) {
+        return '0.'
+    } else {
+        return currentDisplayValue.includes('.') ? currentDisplayValue : currentDisplayValue + '.'
+    }
+}
+
+const updateExpressionByDisplayValue = (state: CalculatorState): void => {
+    const lastNumberReg = /((\D?-)?\d+(\.\d*)?)?$/;
+    state.expression = state.expression.replace(lastNumberReg, state.displayValue);
+}
 
 const getExpressionResult = (expression: string): string => {
     // eslint-disable-next-line no-new-func
@@ -106,6 +122,6 @@ const getNumberOfDigits = (str: string): number => {
     return numberCount;
 };
 
-export const {inputNumber, plus, minus, multiply, divide, calculate} = calculatorSlice.actions
+export const {inputNumber, plus, minus, multiply, divide, calculate, percentage} = calculatorSlice.actions
 
 export default calculatorSlice
