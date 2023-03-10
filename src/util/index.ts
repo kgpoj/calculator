@@ -10,6 +10,9 @@ const getScientificNotation = (displayValueNumber: number): string => {
 };
 
 export const toFormatString = (displayValue: string): string => {
+    if (displayValue === 'ERROR') {
+        return 'ERROR'
+    }
     const displayValueNumber = Number(displayValue);
     const absoluteDisplayValue = Math.abs(displayValueNumber);
     const isExceedDisplayRange = absoluteDisplayValue > 999999999 || (absoluteDisplayValue > 0 && absoluteDisplayValue < 1e-8)

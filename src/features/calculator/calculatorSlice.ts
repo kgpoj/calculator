@@ -106,10 +106,10 @@ const updateExpressionByDisplayValue = (state: CalculatorState): void => {
 }
 
 const getExpressionResult = (expression: string): string => {
-    // eslint-disable-next-line no-new-func
     expression =  expression.replaceAll('--', '+')
+    // eslint-disable-next-line no-new-func
     const func = new Function(`return ${expression}`)
-    return String(func() || 0)
+    return Number.isFinite(func()) ? String(func()) : 'ERROR'
 }
 
 const handleOperation = (state: CalculatorState, currentOperator: string): void => {

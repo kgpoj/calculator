@@ -559,4 +559,16 @@ describe('calculator reducer', () => {
             expect(actual.displayValue).toEqual('0')
         });
     })
+
+    describe('handle error', () => {
+        it('should show `ERROR` when divided by 0', () => {
+            customInitialState('92')
+
+            const step_1 = calculatorSlice.reducer(initialState, divide())
+            const step_2 = calculatorSlice.reducer(step_1, inputNumber('0'))
+            const step_3 = calculatorSlice.reducer(step_2, calculate())
+
+            expect(step_3.displayValue).toEqual('ERROR')
+        });
+    })
 })
