@@ -7,6 +7,7 @@ import calculatorSlice, {
     multiply,
     divide, percentage, switchSign, clearCurrent
 } from "./calculatorSlice";
+import {AnyAction} from "@reduxjs/toolkit";
 
 describe('calculator reducer', () => {
     let initialState: CalculatorState
@@ -15,6 +16,11 @@ describe('calculator reducer', () => {
         initialState.isFirstNumber = false
         initialState.expression = displayValue
     }
+
+    const performActions = (initialState: CalculatorState, ...actions: AnyAction[]): CalculatorState => {
+        return actions.reduce((pre: CalculatorState, cur: AnyAction) => calculatorSlice.reducer(pre, cur), initialState)
+    }
+
     beforeEach(() => {
         initialState = {
             displayValue: '0',
@@ -161,21 +167,17 @@ describe('calculator reducer', () => {
             it('should perform basic minus on integer', () => {
                 customInitialState('3')
 
-                let actual = calculatorSlice.reducer(initialState, minus())
-                actual = calculatorSlice.reducer(actual, inputNumber('1'))
-                actual = calculatorSlice.reducer(actual, calculate())
+                const result = performActions(initialState, minus(), inputNumber('1'), calculate())
 
-                expect(actual.displayValue).toEqual('2')
+                expect(result.displayValue).toEqual('2')
             });
 
             it('should result in negative integer number', () => {
                 customInitialState('3')
 
-                let actual = calculatorSlice.reducer(initialState, minus())
-                actual = calculatorSlice.reducer(actual, inputNumber('4'))
-                actual = calculatorSlice.reducer(actual, calculate())
+                const result = performActions(initialState, minus(), inputNumber('4'), calculate())
 
-                expect(actual.displayValue).toEqual('-1')
+                expect(result.displayValue).toEqual('-1')
             });
         })
 
@@ -183,21 +185,17 @@ describe('calculator reducer', () => {
             it('should perform basic minus on float number', () => {
                 customInitialState('3.1')
 
-                let actual = calculatorSlice.reducer(initialState, minus())
-                actual = calculatorSlice.reducer(actual, inputNumber('1.2'))
-                actual = calculatorSlice.reducer(actual, calculate())
+                const result = performActions(initialState, minus(), inputNumber('1.2'), calculate())
 
-                expect(Number(actual.displayValue)).toBeCloseTo(1.9)
+                expect(Number(result.displayValue)).toBeCloseTo(1.9)
             });
 
             it('should result in negative float number', () => {
                 customInitialState('3.1')
 
-                let actual = calculatorSlice.reducer(initialState, minus())
-                actual = calculatorSlice.reducer(actual, inputNumber('4.2'))
-                actual = calculatorSlice.reducer(actual, calculate())
+                const result = performActions(initialState, minus(), inputNumber('4.2'), calculate())
 
-                expect(Number(actual.displayValue)).toBeCloseTo(-1.1)
+                expect(Number(result.displayValue)).toBeCloseTo(-1.1)
             });
         })
 
@@ -205,44 +203,33 @@ describe('calculator reducer', () => {
             it('should perform continuous minus when click `-`', () => {
                 customInitialState('5')
 
-                let actual = calculatorSlice.reducer(initialState, minus())
-                actual = calculatorSlice.reducer(actual, inputNumber('2'))
-                actual = calculatorSlice.reducer(actual, minus())
+                const result = performActions(initialState, minus(), inputNumber('2'), minus())
 
-                expect(actual.displayValue).toEqual('3')
+                expect(result.displayValue).toEqual('3')
             });
 
             it('should get correct result after continuous minus by click `-`', () => {
                 customInitialState('5')
 
-                let actual = calculatorSlice.reducer(initialState, minus())
-                actual = calculatorSlice.reducer(actual, inputNumber('2'))
-                actual = calculatorSlice.reducer(actual, minus())
-                actual = calculatorSlice.reducer(actual, inputNumber('2'))
-                actual = calculatorSlice.reducer(actual, calculate())
+                const result = performActions(initialState, minus(), inputNumber('2'), minus(), inputNumber('2'), calculate())
 
-                expect(actual.displayValue).toEqual('1')
+                expect(result.displayValue).toEqual('1')
             });
 
             it('should result in 0 when consecutively click `-` and `=`', () => {
                 customInitialState('1234')
 
-                let actual = calculatorSlice.reducer(initialState, minus())
-                actual = calculatorSlice.reducer(actual, calculate())
+                const result = performActions(initialState, minus(), calculate())
 
-                expect(actual.displayValue).toEqual('0')
+                expect(result.displayValue).toEqual('0')
             });
 
             it('should perform continuous minus when click `=`', () => {
                 customInitialState('5')
 
-                let actual = calculatorSlice.reducer(initialState, minus())
-                actual = calculatorSlice.reducer(actual, inputNumber('3'))
-                actual = calculatorSlice.reducer(actual, calculate())
-                actual = calculatorSlice.reducer(actual, calculate())
-                actual = calculatorSlice.reducer(actual, calculate())
+                const result = performActions(initialState, minus(), inputNumber('3'), calculate(), calculate(), calculate())
 
-                expect(actual.displayValue).toEqual('-4')
+                expect(result.displayValue).toEqual('-4')
             });
         })
     })
@@ -252,21 +239,17 @@ describe('calculator reducer', () => {
             it('should perform multiply on integer', () => {
                 customInitialState('3')
 
-                let actual = calculatorSlice.reducer(initialState, multiply())
-                actual = calculatorSlice.reducer(actual, inputNumber('2'))
-                actual = calculatorSlice.reducer(actual, calculate())
+                const result = performActions(initialState, multiply(), inputNumber('2'), calculate())
 
-                expect(actual.displayValue).toEqual('6')
+                expect(result.displayValue).toEqual('6')
             });
 
             it('should perform multiply on large numbers', () => {
                 customInitialState('999999999')
 
-                let actual = calculatorSlice.reducer(initialState, multiply())
-                actual = calculatorSlice.reducer(actual, inputNumber('999999999'))
-                actual = calculatorSlice.reducer(actual, calculate())
+                const result = performActions(initialState, multiply(), inputNumber('999999999'), calculate())
 
-                expect(actual.displayValue).toEqual('999999998000000000')
+                expect(result.displayValue).toEqual('999999998000000000')
             });
         })
 
@@ -274,21 +257,17 @@ describe('calculator reducer', () => {
             it('should perform basic multiply on float number', () => {
                 customInitialState('3.1')
 
-                let actual = calculatorSlice.reducer(initialState, multiply())
-                actual = calculatorSlice.reducer(actual, inputNumber('1.2'))
-                actual = calculatorSlice.reducer(actual, calculate())
+                const result = performActions(initialState, multiply(), inputNumber('1.2'), calculate())
 
-                expect(Number(actual.displayValue)).toBeCloseTo(3.72)
+                expect(Number(result.displayValue)).toBeCloseTo(3.72)
             });
 
             it('should perform multiply on little numbers', () => {
                 customInitialState('0.00000001')
 
-                let actual = calculatorSlice.reducer(initialState, multiply())
-                actual = calculatorSlice.reducer(actual, inputNumber('0.00000001'))
-                actual = calculatorSlice.reducer(actual, calculate())
+                const result = performActions(initialState, multiply(), inputNumber('0.00000001'), calculate())
 
-                expect(Number(actual.displayValue)).toBeCloseTo(1e-16)
+                expect(Number(result.displayValue)).toBeCloseTo(1e-16)
 
             });
         })
@@ -297,44 +276,33 @@ describe('calculator reducer', () => {
             it('should perform continuous multiply when click `×`', () => {
                 customInitialState('5')
 
-                let actual = calculatorSlice.reducer(initialState, multiply())
-                actual = calculatorSlice.reducer(actual, inputNumber('2'))
-                actual = calculatorSlice.reducer(actual, multiply())
+                const result = performActions(initialState, multiply(), inputNumber('2'), multiply())
 
-                expect(actual.displayValue).toEqual('10')
+                expect(result.displayValue).toEqual('10')
             });
 
             it('should get correct result after continuous multiply by click `×`', () => {
                 customInitialState('5')
 
-                let actual = calculatorSlice.reducer(initialState, multiply())
-                actual = calculatorSlice.reducer(actual, inputNumber('2'))
-                actual = calculatorSlice.reducer(actual, multiply())
-                actual = calculatorSlice.reducer(actual, inputNumber('2'))
-                actual = calculatorSlice.reducer(actual, calculate())
+                const result = performActions(initialState, multiply(), inputNumber('2'), multiply(), inputNumber('2'), calculate())
 
-                expect(actual.displayValue).toEqual('20')
+                expect(result.displayValue).toEqual('20')
             });
 
             it('should multiplied by self when consecutively click `×` and `=`', () => {
                 customInitialState('10')
 
-                let actual = calculatorSlice.reducer(initialState, multiply())
-                actual = calculatorSlice.reducer(actual, calculate())
+                const result = performActions(initialState, multiply(), calculate())
 
-                expect(actual.displayValue).toEqual('100')
+                expect(result.displayValue).toEqual('100')
             });
 
             it('should perform continuous multiply when click `=`', () => {
                 customInitialState('5')
 
-                let actual = calculatorSlice.reducer(initialState, multiply())
-                actual = calculatorSlice.reducer(actual, inputNumber('2'))
-                actual = calculatorSlice.reducer(actual, calculate())
-                actual = calculatorSlice.reducer(actual, calculate())
-                actual = calculatorSlice.reducer(actual, calculate())
+                const result = performActions(initialState, multiply(), inputNumber('2'), calculate(), calculate(), calculate())
 
-                expect(actual.displayValue).toEqual('40')
+                expect(result.displayValue).toEqual('40')
             });
         })
     })
@@ -344,21 +312,17 @@ describe('calculator reducer', () => {
             it('should perform basic divide on integer', () => {
                 customInitialState('6')
 
-                let actual = calculatorSlice.reducer(initialState, divide())
-                actual = calculatorSlice.reducer(actual, inputNumber('2'))
-                actual = calculatorSlice.reducer(actual, calculate())
+                const result = performActions(initialState, divide(), inputNumber('2'), calculate())
 
-                expect(actual.displayValue).toEqual('3')
+                expect(result.displayValue).toEqual('3')
             });
 
             it('should result in float number', () => {
                 customInitialState('2')
 
-                let actual = calculatorSlice.reducer(initialState, divide())
-                actual = calculatorSlice.reducer(actual, inputNumber('3'))
-                actual = calculatorSlice.reducer(actual, calculate())
+                const result = performActions(initialState, divide(), inputNumber('3'), calculate())
 
-                expect(Number(actual.displayValue)).toBeCloseTo(0.66666667)
+                expect(Number(result.displayValue)).toBeCloseTo(0.66666667)
             });
         })
 
@@ -366,21 +330,17 @@ describe('calculator reducer', () => {
             it('should perform basic divide on float number', () => {
                 customInitialState('0.12')
 
-                let actual = calculatorSlice.reducer(initialState, divide())
-                actual = calculatorSlice.reducer(actual, inputNumber('0.3'))
-                actual = calculatorSlice.reducer(actual, calculate())
+                const result = performActions(initialState, divide(), inputNumber('0.3'), calculate())
 
-                expect(Number(actual.displayValue)).toBeCloseTo(0.4)
+                expect(Number(result.displayValue)).toBeCloseTo(0.4)
             });
 
             it('should perform divide on little numbers', () => {
                 customInitialState('0.00000001')
 
-                let actual = calculatorSlice.reducer(initialState, divide())
-                actual = calculatorSlice.reducer(actual, inputNumber('3'))
-                actual = calculatorSlice.reducer(actual, calculate())
+                const result = performActions(initialState, divide(), inputNumber('3'), calculate())
 
-                expect(Number(actual.displayValue)).toBeCloseTo(3.333e-9)
+                expect(Number(result.displayValue)).toBeCloseTo(3.333e-9)
             });
         })
 
@@ -388,44 +348,33 @@ describe('calculator reducer', () => {
             it('should perform continuous divide when click `÷`', () => {
                 customInitialState('10')
 
-                let actual = calculatorSlice.reducer(initialState, divide())
-                actual = calculatorSlice.reducer(actual, inputNumber('2'))
-                actual = calculatorSlice.reducer(actual, divide())
+                const result = performActions(initialState, divide(), inputNumber('2'), divide())
 
-                expect(actual.displayValue).toEqual('5')
+                expect(result.displayValue).toEqual('5')
             });
 
             it('should get correct result after continuous divide by click `÷`', () => {
                 customInitialState('10')
 
-                let actual = calculatorSlice.reducer(initialState, divide())
-                actual = calculatorSlice.reducer(actual, inputNumber('2'))
-                actual = calculatorSlice.reducer(actual, divide())
-                actual = calculatorSlice.reducer(actual, inputNumber('5'))
-                actual = calculatorSlice.reducer(actual, calculate())
+                const result = performActions(initialState, divide(), inputNumber('2'), divide(), inputNumber('5'), calculate())
 
-                expect(actual.displayValue).toEqual('1')
+                expect(result.displayValue).toEqual('1')
             });
 
             it('should divided by self when consecutively click `÷` and `=`', () => {
                 customInitialState('10')
 
-                let actual = calculatorSlice.reducer(initialState, divide())
-                actual = calculatorSlice.reducer(actual, calculate())
+                const result = performActions(initialState, divide(), calculate())
 
-                expect(actual.displayValue).toEqual('1')
+                expect(result.displayValue).toEqual('1')
             });
 
             it('should perform continuous divide when click `=`', () => {
                 customInitialState('40')
 
-                let actual = calculatorSlice.reducer(initialState, divide())
-                actual = calculatorSlice.reducer(actual, inputNumber('2'))
-                actual = calculatorSlice.reducer(actual, calculate())
-                actual = calculatorSlice.reducer(actual, calculate())
-                actual = calculatorSlice.reducer(actual, calculate())
+                const result = performActions(initialState, divide(), inputNumber('2'), calculate(), calculate(), calculate())
 
-                expect(actual.displayValue).toEqual('5')
+                expect(result.displayValue).toEqual('5')
             });
         })
     })
@@ -434,35 +383,25 @@ describe('calculator reducer', () => {
         it('should be executed in the correct order', () => {
             customInitialState('1')
 
-            let actual = calculatorSlice.reducer(initialState, plus())
-            actual = calculatorSlice.reducer(actual, inputNumber('2'))
-            actual = calculatorSlice.reducer(actual, multiply())
-            actual = calculatorSlice.reducer(actual, inputNumber('3'))
-            actual = calculatorSlice.reducer(actual, calculate())
+            const result = performActions(initialState, plus(), inputNumber('2'), multiply(), inputNumber('3'), calculate())
 
-            expect(actual.displayValue).toEqual('7')
+            expect(result.displayValue).toEqual('7')
         });
 
         it('should display previous value', () => {
             customInitialState('1')
 
-            let actual = calculatorSlice.reducer(initialState, plus())
-            actual = calculatorSlice.reducer(actual, inputNumber('2'))
-            actual = calculatorSlice.reducer(actual, plus())
-            actual = calculatorSlice.reducer(actual, multiply())
+            const result = performActions(initialState, plus(), inputNumber('2'), plus(), multiply())
 
-            expect(actual.displayValue).toEqual('2')
+            expect(result.displayValue).toEqual('2')
         });
 
         it('should display plus result', () => {
             customInitialState('1')
 
-            let actual = calculatorSlice.reducer(initialState, plus())
-            actual = calculatorSlice.reducer(actual, inputNumber('2'))
-            actual = calculatorSlice.reducer(actual, multiply())
-            actual = calculatorSlice.reducer(actual, plus())
+            const result = performActions(initialState, plus(), inputNumber('2'), multiply(), plus())
 
-            expect(actual.displayValue).toEqual('3')
+            expect(result.displayValue).toEqual('3')
         });
     })
 
@@ -470,30 +409,25 @@ describe('calculator reducer', () => {
         it('should get correct display value after percentage', () => {
             customInitialState('99')
 
-            let actual = calculatorSlice.reducer(initialState, percentage())
+            const result = performActions(initialState, percentage())
 
-            expect(actual.displayValue).toEqual('0.99')
+            expect(result.displayValue).toEqual('0.99')
         });
 
         it('should get correct result after calculation on percentage value', () => {
             customInitialState('99')
 
-            let actual = calculatorSlice.reducer(initialState, percentage())
-            actual = calculatorSlice.reducer(actual, plus())
-            actual = calculatorSlice.reducer(actual, inputNumber('1'))
-            actual = calculatorSlice.reducer(actual, calculate())
+            const result = performActions(initialState, percentage(), plus(), inputNumber('1'), calculate())
 
-            expect(actual.displayValue).toEqual('1.99')
+            expect(result.displayValue).toEqual('1.99')
         });
 
         it('should handle click operator and percentage', () => {
             customInitialState('2')
 
-            let actual = calculatorSlice.reducer(initialState, plus())
-            actual = calculatorSlice.reducer(actual, percentage())
-            actual = calculatorSlice.reducer(actual, calculate())
+            const result = performActions(initialState, plus(), percentage(), calculate())
 
-            expect(actual.displayValue).toEqual('2.04')
+            expect(result.displayValue).toEqual('2.04')
         });
     })
 
@@ -501,51 +435,42 @@ describe('calculator reducer', () => {
         it('should get correct display value after switch', () => {
             customInitialState('99')
 
-            let actual = calculatorSlice.reducer(initialState, switchSign())
+            const result = performActions(initialState, switchSign())
 
-            expect(actual.displayValue).toEqual('-99')
+            expect(result.displayValue).toEqual('-99')
         });
 
         it('should get correct result after calculation on value switched sign', () => {
             customInitialState('99')
 
-            let actual = calculatorSlice.reducer(initialState, switchSign())
-            actual = calculatorSlice.reducer(actual, plus())
-            actual = calculatorSlice.reducer(actual, inputNumber('1'))
-            actual = calculatorSlice.reducer(actual, calculate())
+            const result = performActions(initialState, switchSign(), plus(), inputNumber('1'), calculate())
 
-            expect(actual.displayValue).toEqual('-98')
+            expect(result.displayValue).toEqual('-98')
         });
 
         describe('handle click operator and switch sign', () => {
             it('should display `-0` after click operator and switch sign', () => {
                 customInitialState('2')
 
-                let actual = calculatorSlice.reducer(initialState, plus())
-                actual = calculatorSlice.reducer(actual, switchSign())
+                const result = performActions(initialState, plus(), switchSign())
 
-                expect(actual.displayValue).toEqual('-0')
+                expect(result.displayValue).toEqual('-0')
             });
 
             it('should correctly input negative numbers', () => {
                 customInitialState('2')
 
-                let actual = calculatorSlice.reducer(initialState, plus())
-                actual = calculatorSlice.reducer(actual, switchSign())
-                actual = calculatorSlice.reducer(actual, inputNumber('3'))
+                const result = performActions(initialState, plus(), switchSign(), inputNumber('3'))
 
-                expect(actual.displayValue).toEqual('-3')
+                expect(result.displayValue).toEqual('-3')
             });
 
             it('should get correct result after calculation on negative numbers', () => {
                 customInitialState('2')
 
-                let actual = calculatorSlice.reducer(initialState, minus())
-                actual = calculatorSlice.reducer(actual, switchSign())
-                actual = calculatorSlice.reducer(actual, inputNumber('3'))
-                actual = calculatorSlice.reducer(actual, calculate())
+                const result = performActions(initialState, minus(), switchSign(), inputNumber('3'), calculate())
 
-                expect(actual.displayValue).toEqual('5')
+                expect(result.displayValue).toEqual('5')
             });
         })
     })
@@ -554,9 +479,9 @@ describe('calculator reducer', () => {
         it('should display `0` after click `C`', () => {
             customInitialState('2')
 
-            let actual = calculatorSlice.reducer(initialState, clearCurrent())
+            const result = performActions(initialState, clearCurrent())
 
-            expect(actual.displayValue).toEqual('0')
+            expect(result.displayValue).toEqual('0')
         });
     })
 
@@ -564,11 +489,9 @@ describe('calculator reducer', () => {
         it('should show `ERROR` when divided by 0', () => {
             customInitialState('92')
 
-            const step_1 = calculatorSlice.reducer(initialState, divide())
-            const step_2 = calculatorSlice.reducer(step_1, inputNumber('0'))
-            const step_3 = calculatorSlice.reducer(step_2, calculate())
+            const result = performActions(initialState, divide(), inputNumber('0'), calculate())
 
-            expect(step_3.displayValue).toEqual('ERROR')
+            expect(result.displayValue).toEqual('ERROR')
         });
     })
 })
