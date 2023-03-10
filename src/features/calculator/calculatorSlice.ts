@@ -83,6 +83,11 @@ const calculatorSlice = createSlice({
             }
             updateExpressionByDisplayValue(state)
             state.prevKey = '+/-'
+        },
+        clearCurrent: state => {
+            state.displayValue = '0'
+            updateExpressionByDisplayValue(state)
+            state.prevKey = 'C'
         }
     },
 });
@@ -132,6 +137,6 @@ const getNumberOfDigits = (str: string): number => {
     return numberCount;
 };
 
-export const {inputNumber, plus, minus, multiply, divide, calculate, percentage, switchSign} = calculatorSlice.actions
+export const {inputNumber, plus, minus, multiply, divide, calculate, percentage, switchSign, clearCurrent} = calculatorSlice.actions
 
 export default calculatorSlice
