@@ -29,8 +29,8 @@ const calculatorSlice = createSlice({
             const currentDisplayValue = state.displayValue;
             if (inputValue === '.') {
                 state.displayValue = handleInputDot(state.isFirstNumber, currentDisplayValue)
-            } else if (state.isFirstNumber) {
-                state.displayValue = state.displayValue === '-0' ? `-${inputValue}` : inputValue;
+            } else if (state.isFirstNumber || currentDisplayValue === 'ERROR') {
+                state.displayValue = currentDisplayValue === '-0' ? `-${inputValue}` : inputValue;
             } else if (getNumberOfDigits(currentDisplayValue) < 9) {
                 state.displayValue += inputValue
             }
@@ -102,7 +102,7 @@ const handleInputDot = (isFirstNumber: boolean, currentDisplayValue: string): st
 
 const updateExpressionByDisplayValue = (state: CalculatorState): void => {
     const lastNumberReg = /(((?<=\D|^)-)?\d+(\.\d*)?)?$/;
-    state.expression = state.expression.replace(lastNumberReg, state.displayValue);
+    state.expression = state.expression.replace(lastNumberReg, state.displayValue).replace('ERROR', '');
 }
 
 const getExpressionResult = (expression: string): string => {

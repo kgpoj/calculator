@@ -493,5 +493,13 @@ describe('calculator reducer', () => {
 
             expect(result.displayValue).toEqual('ERROR')
         });
+
+        it('should be able to calculate after error', () => {
+            customInitialState('92')
+
+            const result = performActions(initialState, divide(), inputNumber('0'), calculate(), inputNumber('1'), plus(), inputNumber('1'), calculate())
+
+            expect(result.displayValue).toEqual('2')
+        });
     })
 })
