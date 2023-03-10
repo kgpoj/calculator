@@ -102,14 +102,21 @@ const handleInputDot = (isFirstNumber: boolean, currentDisplayValue: string): st
 
 const updateExpressionByDisplayValue = (state: CalculatorState): void => {
     const lastNumberReg = /(((?<=\D|^)-)?\d+(\.\d*)?)?$/;
-    state.expression = state.expression.replace(lastNumberReg, state.displayValue).replace('ERROR', '');
+    state.expression = state.expression.replace(lastNumberReg, state.displayValue)
+    if (state.prevKey === '=') {
+        state.expression = state.expression.replace('ERROR', '')
+    }
 }
 
 const getExpressionResult = (expression: string): string => {
-    expression =  expression.replaceAll('--', '+')
+    expression = expression.replaceAll('--', '+')
     // eslint-disable-next-line no-new-func
     const func = new Function(`return ${expression}`)
-    return Number.isFinite(func()) ? String(func()) : 'ERROR'
+    try {
+        return Number.isFinite(func()) ? String(func()) : 'ERROR'
+    } catch {
+        return 'ERROR'
+    }
 }
 
 const handleOperation = (state: CalculatorState, currentOperator: string): void => {
@@ -137,6 +144,16 @@ const getNumberOfDigits = (str: string): number => {
     return numberCount;
 };
 
-export const {inputNumber, plus, minus, multiply, divide, calculate, percentage, switchSign, clearCurrent} = calculatorSlice.actions
+export const {
+    inputNumber,
+    plus,
+    minus,
+    multiply,
+    divide,
+    calculate,
+    percentage,
+    switchSign,
+    clearCurrent
+} = calculatorSlice.actions
 
 export default calculatorSlice
